@@ -1,7 +1,12 @@
 import pathlib
+import tkinter
+
 import customtkinter
 from tkinter import filedialog
+
+import pandas as pd
 import seaborn as sns
+import numpy as np
 
 from LRTabView import LRTabView
 from MLRTabView import MLRTabView
@@ -13,6 +18,7 @@ class PredictionApp(customtkinter.CTk):
         super().__init__()
 
         self.__dataset_path: str = ''
+        self.__predictable_col_string_var = None
 
         self.title("Profit Prediction")
         self.geometry(f"{900}x{700}")
@@ -34,17 +40,16 @@ class PredictionApp(customtkinter.CTk):
         self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', command=self.__accuracy)
         self.__accuracy_button.grid(row=2, column=0, padx=20, pady=10)
 
-        self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame)
-        # self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
-        # self.__independent_feature_option_menu.set(attribute_list[0])
-        # self.__independent_feature_option_menu.grid(row=0, column=0, padx=10, pady=10)
+        self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame, values=[])
+        self.__predictable_column_option_menu.set('N/A')
+        self.__predictable_column_option_menu.grid(row=3, column=0, padx=20, pady=10)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='', wraplength=200,
                                                            font=customtkinter.CTkFont(weight='bold'))
         self.__dataset_name_label.grid(row=5, column=0, padx=20, pady=10)
 
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
-        self.__main_tab_view.grid(row=0, column=1, rowspan=4, columnspan=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
+        self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
         self.__main_tab_view.add(LRTabView.get_tab_name())
         self.__main_tab_view.add(MLRTabView.get_tab_name())
@@ -70,9 +75,29 @@ class PredictionApp(customtkinter.CTk):
             file_name = path.split('/')[-1]
             self.__dataset_name_label.configure(text=file_name)
 
-            self.__LRTabView.invalidate(self.__dataset_path)
-            self.__MLRTabView.invalidate(self.__dataset_path)
-            self.__SVRTabView.invalidate(self.__dataset_path)
+            dataset = pd.read_csv(self.__dataset_path)
+            dataset = dataset.select_dtypes(include=np.number)
+            dataset.dropna(inplace=True)
+
+            attribute_list = list(dataset.columns.values)
+
+            self.__predictable_col_string_var = tkinter.StringVar()
+            self.__predictable_col_string_var.set(attribute_list[-1])
+
+            self.__predictable_column_option_menu.configure(values=attribute_list, variable=self.__predictable_col_string_var)
+            self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
+
+            selected_col = self.__predictable_col_string_var.get()
+            self.__LRTabView.invalidate(self.__dataset_path, selected_col)
+            self.__MLRTabView.invalidate(self.__dataset_path, selected_col)
+            self.__SVRTabView.invalidate(self.__dataset_path, selected_col)
+
+    def __predictable_column_callback(self, *args):
+        column = self.__predictable_col_string_var.get()
+        print(column)
+        self.__LRTabView.on_change_predictable_column(column)
+        self.__MLRTabView.on_change_predictable_column(column)
+        self.__SVRTabView.on_change_predictable_column(column)
 
     def __predict(self):
         current_tab = self.__main_tab_view.get()

@@ -29,6 +29,9 @@ class SVRTabView:
         self.__x_standard_scalar: StandardScaler
         self.__y_standard_scalar: StandardScaler
 
+        self.__predictable_column = ''
+        self.row_index = 0
+
         self.__tab_view = tab_view
 
         # defining widgets
@@ -44,37 +47,52 @@ class SVRTabView:
         self.__feature_entries = []
         self.__feature_entry_labels = []
 
-    def __create_layout(self, dataset_path: str):
-        self.dataset_path = dataset_path
-
+    def __create_layout(self):
         # importing and processing dataset
         self.__dataset = pd.read_csv(self.dataset_path)
         self.__dataset = self.__dataset.select_dtypes(include=np.number)
         self.__dataset.dropna(inplace=True)
 
+        attribute_list: list[str] = list(self.__dataset.columns.values)
+        attribute_list.remove(self.__predictable_column)
+
+        for column in attribute_list:
+            self.__feature_entry_labels.append(customtkinter.CTkLabel(self.__tab_view, text=column, font=customtkinter.CTkFont(size=15, weight='bold')))
+            self.__feature_entries.append(customtkinter.CTkEntry(self.__tab_view, placeholder_text=f'Enter {column}', width=200))
+
+        self.row_index = 0
+        column_index = 0
+
+        for label, entry in zip(self.__feature_entry_labels, self.__feature_entries):
+            label.grid(row=self.row_index, column=column_index, padx=10, pady=(0, 10))
+            entry.grid(row=self.row_index + 1, column=column_index, padx=10, pady=(0, 10))
+            column_index += 1
+            if column_index == 3:
+                column_index = 0
+                self.row_index += 2
+
+        if column_index != 0:
+            self.row_index += 2
+
         # display layout based on the imported dataset
-        for i in range(self.__dataset.columns.size - 1):
-            self.__feature_entry_labels.append(customtkinter.CTkLabel(self.__tab_view,
-                                                                      text=self.__dataset.columns[i],
-                                                                      font=customtkinter.CTkFont(size=15,
-                                                                                                 weight='bold')))
-            self.__feature_entries.append(customtkinter.CTkEntry(self.__tab_view,
-                                                                 placeholder_text=f'Enter {self.__dataset.columns[i]}',
-                                                                 width=200))
-            self.__feature_entry_labels[i].grid(row=0, column=i, padx=10, pady=(0, 10))
-            self.__feature_entries[i].grid(row=1, column=i, padx=10, pady=(0, 10))
+        # for i in range(self.__dataset.columns.size - 1):
+        #     self.__feature_entry_labels.append(customtkinter.CTkLabel(self.__tab_view,
+        #                                                               text=self.__dataset.columns[i],
+        #                                                               font=customtkinter.CTkFont(size=15,
+        #                                                                                          weight='bold')))
+        #     self.__feature_entries.append(customtkinter.CTkEntry(self.__tab_view,
+        #                                                          placeholder_text=f'Enter {self.__dataset.columns[i]}',
+        #                                                          width=200))
+        #     self.__feature_entry_labels[i].grid(row=0, column=i, padx=10, pady=(0, 10))
+        #     self.__feature_entries[i].grid(row=1, column=i, padx=10, pady=(0, 10))
 
         # Training the model
-        feature_column_count = 1
-
-        x = self.__dataset.drop('Profit', axis=1).values
-        # x = self.__dataset['rdspend'].values
-        y = self.__dataset['Profit'].values
+        x = self.__dataset.drop(self.__predictable_column, axis=1).values
+        y = self.__dataset[self.__predictable_column].values
 
         self.__x_standard_scalar = StandardScaler()
         self.__y_standard_scalar = StandardScaler()
         x = self.__x_standard_scalar.fit_transform(x.reshape((len(x), self.__dataset.columns.size - 1)))
-        # x = self.__x_standard_scalar.fit_transform(x.reshape((len(x), feature_column_count)))
         y = self.__y_standard_scalar.fit_transform(y.reshape((len(y), 1)))
 
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
@@ -101,7 +119,12 @@ class SVRTabView:
 
         canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
         canvas.draw()
-        canvas.get_tk_widget().grid(row=3, column=0, columnspan=self.__dataset.columns.size - 1)
+        canvas.get_tk_widget().grid(row=self.row_index + 1, column=0, columnspan=3)
+
+    def on_change_predictable_column(self, column: str):
+        self.__predictable_column = column
+        self.invalidate(self.dataset_path, self.__predictable_column)
+        print(f'SVR: Set predictable column as: {column}')
 
     def predict(self):
         if self.dataset_path != '':
@@ -110,9 +133,8 @@ class SVRTabView:
             predicted_value = self.__regression_model.predict(self.__x_standard_scalar.transform(feature_list))
             predicted_value = self.__y_standard_scalar.inverse_transform([predicted_value])
 
-            self.__predicted_value_label.configure(text=f'Predicted Value: {predicted_value[0][0]}',
-                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
-            self.__predicted_value_label.grid(row=2, column=0, columnspan=self.__dataset.columns.size - 1, padx=10, pady=(0, 10), sticky='WE')
+            self.__predicted_value_label.configure(text=f'Predicted Value: {predicted_value[0][0]}', font=customtkinter.CTkFont(size=20, weight="bold"))
+            self.__predicted_value_label.grid(row=self.row_index, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
 
     def accuracy(self):
         if self.dataset_path != '':
@@ -126,6 +148,9 @@ class SVRTabView:
             rmse = np.sqrt(mse)
             print(f'Support Vector Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
 
-    def invalidate(self, dataset_path: str):
+    def invalidate(self, dataset_path: str, predictable_column: str):
+        self.dataset_path = dataset_path
+        self.__predictable_column = predictable_column
+
         self.__invalidate_widgets()
-        self.__create_layout(dataset_path)
+        self.__create_layout()
