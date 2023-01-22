@@ -2,7 +2,6 @@ import pathlib
 import customtkinter
 from tkinter import filedialog
 import seaborn as sns
-import matplotlib.pyplot as plt
 
 from LRTabView import LRTabView
 from MLRTabView import MLRTabView
@@ -34,6 +33,11 @@ class PredictionApp(customtkinter.CTk):
 
         self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', command=self.__accuracy)
         self.__accuracy_button.grid(row=2, column=0, padx=20, pady=10)
+
+        self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame)
+        # self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
+        # self.__independent_feature_option_menu.set(attribute_list[0])
+        # self.__independent_feature_option_menu.grid(row=0, column=0, padx=10, pady=10)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='', wraplength=200,
                                                            font=customtkinter.CTkFont(weight='bold'))
