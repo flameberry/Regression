@@ -47,11 +47,12 @@ class SVRTabView:
         self.__feature_entries = []
         self.__feature_entry_labels = []
 
-    def __create_layout(self):
-        # importing and processing dataset
-        self.__dataset = pd.read_csv(self.dataset_path)
-        self.__dataset = self.__dataset.select_dtypes(include=np.number)
-        self.__dataset.dropna(inplace=True)
+    def __create_layout(self, reload_dataset=True):
+        if reload_dataset:
+            # importing and processing dataset
+            self.__dataset = pd.read_csv(self.dataset_path)
+            self.__dataset = self.__dataset.select_dtypes(include=np.number)
+            self.__dataset.dropna(inplace=True)
 
         attribute_list: list[str] = list(self.__dataset.columns.values)
         attribute_list.remove(self.__predictable_column)
@@ -73,18 +74,6 @@ class SVRTabView:
 
         if column_index != 0:
             self.row_index += 2
-
-        # display layout based on the imported dataset
-        # for i in range(self.__dataset.columns.size - 1):
-        #     self.__feature_entry_labels.append(customtkinter.CTkLabel(self.__tab_view,
-        #                                                               text=self.__dataset.columns[i],
-        #                                                               font=customtkinter.CTkFont(size=15,
-        #                                                                                          weight='bold')))
-        #     self.__feature_entries.append(customtkinter.CTkEntry(self.__tab_view,
-        #                                                          placeholder_text=f'Enter {self.__dataset.columns[i]}',
-        #                                                          width=200))
-        #     self.__feature_entry_labels[i].grid(row=0, column=i, padx=10, pady=(0, 10))
-        #     self.__feature_entries[i].grid(row=1, column=i, padx=10, pady=(0, 10))
 
         # Training the model
         x = self.__dataset.drop(self.__predictable_column, axis=1).values
@@ -149,8 +138,10 @@ class SVRTabView:
             print(f'Support Vector Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset_path: str, predictable_column: str):
+        reload = self.dataset_path != dataset_path
+
         self.dataset_path = dataset_path
         self.__predictable_column = predictable_column
 
         self.__invalidate_widgets()
-        self.__create_layout()
+        self.__create_layout(reload_dataset=reload)

@@ -44,11 +44,12 @@ class MLRTabView:
         self.__feature_entries = []
         self.__feature_entry_labels = []
 
-    def __create_layout(self):
-        # importing and processing dataset
-        self.__dataset = pd.read_csv(self.dataset_path)
-        self.__dataset = self.__dataset.select_dtypes(include=np.number)
-        self.__dataset.dropna(inplace=True)
+    def __create_layout(self, reload_dataset=True):
+        if reload_dataset:
+            # importing and processing dataset
+            self.__dataset = pd.read_csv(self.dataset_path)
+            self.__dataset = self.__dataset.select_dtypes(include=np.number)
+            self.__dataset.dropna(inplace=True)
 
         # display layout based on the imported dataset
         attribute_list: list[str] = list(self.__dataset.columns.values)
@@ -123,8 +124,12 @@ class MLRTabView:
             print(f'Multiple Linear Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset_path: str, predictable_column: str):
+        reload = True
+        if self.dataset_path == dataset_path:
+            reload = False
+
         self.dataset_path = dataset_path
         self.__predictable_column = predictable_column
 
         self.__invalidate_widgets()
-        self.__create_layout()
+        self.__create_layout(reload_dataset=reload)

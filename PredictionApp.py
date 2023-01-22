@@ -21,14 +21,14 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_col_string_var = None
 
         self.title("Profit Prediction")
-        self.geometry(f"{900}x{700}")
+        self.geometry(f"{1000}x{800}")
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         self.__sidebar_frame = customtkinter.CTkFrame(self, width=100, corner_radius=10)
         self.__sidebar_frame.grid(row=0, column=0, rowspan=4, padx=(10, 0), pady=(10, 10), sticky="nsew")
-        self.__sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.__sidebar_frame.grid_rowconfigure(5, weight=1)
 
         self.__import_button = customtkinter.CTkButton(self.__sidebar_frame, text='Import Dataset',
                                                        command=self.import_dataset)
@@ -40,13 +40,16 @@ class PredictionApp(customtkinter.CTk):
         self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', command=self.__accuracy)
         self.__accuracy_button.grid(row=2, column=0, padx=20, pady=10)
 
+        self.__predictable_col_label = customtkinter.CTkLabel(self.__sidebar_frame, text='To Predict:')
+        self.__predictable_col_label.grid(row=3, column=0, padx=20)
+
         self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame, values=[])
         self.__predictable_column_option_menu.set('N/A')
-        self.__predictable_column_option_menu.grid(row=3, column=0, padx=20, pady=10)
+        self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='', wraplength=200,
                                                            font=customtkinter.CTkFont(weight='bold'))
-        self.__dataset_name_label.grid(row=5, column=0, padx=20, pady=10)
+        self.__dataset_name_label.grid(row=6, column=0, padx=20, pady=10)
 
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
