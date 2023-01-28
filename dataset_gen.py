@@ -1,37 +1,23 @@
 import pandas as pd
-import random
 import numpy as np
 
 
-# (y - y1) * (y - y1) = 4 * a * (x - x1)
-
-def parabola(x, x1=0, y1=0):
-    return y1 + (x - x1) * (x - x1) / 4
+# Function to calculate the power-law with constants a and b
+def power_law(x, a, b):
+    return a * np.power(x, b)
 
 
 def generate_random_dataset(size=1000):
-    x = []
-    y = []
-    ms_range = [100000, 500000]
-    x_offset = np.floor((ms_range[1] - ms_range[0]) / size)
+    range_min = 50000
+    range_max = 500000
 
-    new_origin_x = ms_range[0]
-    new_origin_y = parabola(ms_range[0])
+    x_dummy = np.linspace(start=range_min, stop=range_max, num=size)
+    noise_x = 0.1 * np.random.normal(scale=x_dummy.std(), size=x_dummy.size)  # Fixme: Add standard deviation and mean
+    x_dummy += noise_x
 
-    for i in range(0, size):
-        random_factor_x = int(ms_range[0] / 100)
-        random_factor_y = int(random_factor_x * random_factor_x / 1000)
+    y_dummy = np.array(power_law(x_dummy, 6500, 0.3))  # Add noise from a Gaussian distribution
+    noise = 0.2 * np.random.normal(scale=y_dummy.std(), size=y_dummy.size)  # Fixme: Add standard deviation and mean
+    y_dummy += noise
 
-        random_x = random.randint(-random_factor_x, random_factor_x)
-        random_y = random.randint(-random_factor_y, random_factor_y)
-
-        # x_val = i + ms_range[0]
-        x_plot = i * x_offset
-        x_val = ms_range[0] + i * x_offset
-        x.append(x_val)
-        # y.append(parabola(x_val) / 100000 + random_y)
-        y.append(parabola(x_plot))
-
-    # np.interp(y, [y[0], y[size - 1]], ms_range)
-    dataset = pd.DataFrame({'Marketing Spend': x, 'Profit': y})
+    dataset = pd.DataFrame({'Marketing Spend': x_dummy, 'Profit': y_dummy})
     return dataset

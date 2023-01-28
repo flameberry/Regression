@@ -79,7 +79,7 @@ class LRTabView:
             # y_difference = comparison_df.eval("Y_Predicted - Y_Actual").rename("Y_Difference")
             # diff_range = min(abs(y_difference.min()), abs(y_difference.max()))
 
-            sns.scatterplot(data=scatter_df, x=f'{x_name}_Actual', y=f'{y_name}_Actual', ax=ax, hue=f'{y_name}_Actual', s=5)  # TODO: Fixme
+            sns.scatterplot(data=scatter_df, x=f'{x_name}_Actual', y=f'{y_name}_Actual', ax=ax, hue=f'{y_name}_Actual', s=15)  # TODO: Fixme
             ax.yaxis.set_label_position("right")
 
             sns.lineplot(data=predicted_df, x='X_Actual', y='Y_Predicted', ax=ax, color='orange')
