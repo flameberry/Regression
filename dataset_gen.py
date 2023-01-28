@@ -21,3 +21,8 @@ def generate_random_dataset(size=1000):
 
     dataset = pd.DataFrame({'Marketing Spend': x_dummy, 'Profit': y_dummy})
     return dataset
+
+
+if __name__ == '__main__':
+    random_dataset = generate_random_dataset()
+    random_dataset.to_csv('datasets/random_dataset.csv', index=False)
