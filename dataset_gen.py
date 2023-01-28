@@ -32,6 +32,6 @@ def generate_random_dataset(size=1000):
         # y.append(parabola(x_val) / 100000 + random_y)
         y.append(parabola(x_plot))
 
-    np.interp(y, [y[0], y[size - 1]], ms_range)
+    # np.interp(y, [y[0], y[size - 1]], ms_range)
     dataset = pd.DataFrame({'Marketing Spend': x, 'Profit': y})
     return dataset
