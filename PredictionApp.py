@@ -47,9 +47,12 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_column_option_menu.set('N/A')
         self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
 
-        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='', wraplength=200,
+        self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', command=self.__reload_dataset)
+        self.__reload_button.grid(row=6, column=0, padx=20, pady=10)
+
+        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=200,
                                                            font=customtkinter.CTkFont(weight='bold'))
-        self.__dataset_name_label.grid(row=6, column=0, padx=20, pady=10)
+        self.__dataset_name_label.grid(row=7, column=0, padx=20, pady=10)
 
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
@@ -78,6 +81,10 @@ class PredictionApp(customtkinter.CTk):
             file_name = path.split('/')[-1]
             self.__dataset_name_label.configure(text=file_name)
 
+            self.__reload_dataset()
+
+    def __reload_dataset(self):
+        if len(self.__dataset_path):
             dataset = pd.read_csv(self.__dataset_path)
             dataset = dataset.select_dtypes(include=np.number)
             dataset.dropna(inplace=True)
@@ -87,13 +94,16 @@ class PredictionApp(customtkinter.CTk):
             self.__predictable_col_string_var = tkinter.StringVar()
             self.__predictable_col_string_var.set(attribute_list[-1])
 
-            self.__predictable_column_option_menu.configure(values=attribute_list, variable=self.__predictable_col_string_var)
+            self.__predictable_column_option_menu.configure(values=attribute_list,
+                                                            variable=self.__predictable_col_string_var)
             self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
 
             selected_col = self.__predictable_col_string_var.get()
             self.__LRTabView.invalidate(self.__dataset_path, selected_col)
             self.__MLRTabView.invalidate(self.__dataset_path, selected_col)
             self.__SVRTabView.invalidate(self.__dataset_path, selected_col)
+        else:
+            print('ERROR: Failed to reload dataset!')
 
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()
