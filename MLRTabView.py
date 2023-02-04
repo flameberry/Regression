@@ -17,8 +17,6 @@ class MLRTabView:
         return MLRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
-        self.dataset_path = ''
-
         self.__dataset = pd.DataFrame()
         self.__regression_model = LinearRegression()
         self.__x_train: np.array = None
@@ -44,13 +42,7 @@ class MLRTabView:
         self.__feature_entries = []
         self.__feature_entry_labels = []
 
-    def __create_layout(self, reload_dataset=True):
-        if reload_dataset:
-            # importing and processing dataset
-            self.__dataset = pd.read_csv(self.dataset_path)
-            self.__dataset = self.__dataset.select_dtypes(include=np.number)
-            self.__dataset.dropna(inplace=True)
-
+    def __create_layout(self):
         # display layout based on the imported dataset
         attribute_list: list[str] = list(self.__dataset.columns.values)
         attribute_list.remove(self.__predictable_column)
@@ -82,7 +74,7 @@ class MLRTabView:
         self.__plot()
 
     def __plot(self):
-        if self.dataset_path != '':
+        if not self.__dataset.empty:
             figure = plt.Figure(figsize=(6, 5))
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
@@ -100,13 +92,8 @@ class MLRTabView:
             canvas.draw()
             canvas.get_tk_widget().grid(row=self.row_index + 1, column=0, columnspan=3)
 
-    def on_change_predictable_column(self, column: str):
-        self.__predictable_column = column
-        self.invalidate(self.dataset_path, self.__predictable_column)
-        print(f'MLR: Set predictable column as: {column}')
-
     def predict(self):
-        if self.dataset_path != '':
+        if not self.__dataset.empty:
             feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
             predicted_value = self.__regression_model.predict(feature_list)
             print(predicted_value)
@@ -116,20 +103,16 @@ class MLRTabView:
                                               columnspan=3, padx=10, pady=(0, 10), sticky='WE')
 
     def accuracy(self):
-        if self.dataset_path != '':
+        if not self.__dataset.empty:
             y_predicted = self.__regression_model.predict(self.__x_test)
             r2score = r2_score(self.__y_test, y_predicted)
             mse = mean_squared_error(self.__y_test, y_predicted)
             rmse = np.sqrt(mse)
             print(f'Multiple Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
-    def invalidate(self, dataset_path: str, predictable_column: str):
-        reload = True
-        if self.dataset_path == dataset_path:
-            reload = False
-
-        self.dataset_path = dataset_path
+    def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
+        self.__dataset = dataset
         self.__predictable_column = predictable_column
 
         self.__invalidate_widgets()
-        self.__create_layout(reload_dataset=reload)
+        self.__create_layout()

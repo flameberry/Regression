@@ -18,6 +18,7 @@ class PredictionApp(customtkinter.CTk):
         super().__init__()
 
         self.__dataset_path: str = ''
+        self.__dataset = pd.DataFrame()
         self.__predictable_col_string_var = None
 
         self.title("Profit Prediction")
@@ -34,10 +35,10 @@ class PredictionApp(customtkinter.CTk):
                                                        command=self.import_dataset)
         self.__import_button.grid(row=0, column=0, padx=20, pady=10)
 
-        self.__predict_button = customtkinter.CTkButton(self.__sidebar_frame, text='Predict', command=self.__predict)
+        self.__predict_button = customtkinter.CTkButton(self.__sidebar_frame, text='Predict', state='disabled', command=self.__predict)
         self.__predict_button.grid(row=1, column=0, padx=20, pady=10)
 
-        self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', command=self.__accuracy)
+        self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', state='disabled', command=self.__accuracy)
         self.__accuracy_button.grid(row=2, column=0, padx=20, pady=10)
 
         self.__predictable_col_label = customtkinter.CTkLabel(self.__sidebar_frame, text='To Predict:')
@@ -47,7 +48,7 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_column_option_menu.set('N/A')
         self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
 
-        self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', command=self.__reload_dataset)
+        self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', state='disabled', command=self.__reload_dataset)
         self.__reload_button.grid(row=6, column=0, padx=20, pady=10)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=200,
@@ -85,11 +86,15 @@ class PredictionApp(customtkinter.CTk):
 
     def __reload_dataset(self):
         if len(self.__dataset_path):
-            dataset = pd.read_csv(self.__dataset_path)
-            dataset = dataset.select_dtypes(include=np.number)
-            dataset.dropna(inplace=True)
+            self.__dataset = pd.read_csv(self.__dataset_path)
+            self.__dataset = self.__dataset.select_dtypes(include=np.number)
+            self.__dataset.dropna(inplace=True)
 
-            attribute_list = list(dataset.columns.values)
+            attribute_list = list(self.__dataset.columns.values)
+
+            self.__predict_button.configure(state='normal')
+            self.__accuracy_button.configure(state='normal')
+            self.__reload_button.configure(state='normal')
 
             self.__predictable_col_string_var = tkinter.StringVar()
             self.__predictable_col_string_var.set(attribute_list[-1])
@@ -99,9 +104,9 @@ class PredictionApp(customtkinter.CTk):
             self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
 
             selected_col = self.__predictable_col_string_var.get()
-            self.__LRTabView.invalidate(self.__dataset_path, selected_col)
-            self.__MLRTabView.invalidate(self.__dataset_path, selected_col)
-            self.__SVRTabView.invalidate(self.__dataset_path, selected_col)
+            self.__LRTabView.invalidate(self.__dataset, selected_col)
+            self.__MLRTabView.invalidate(self.__dataset, selected_col)
+            self.__SVRTabView.invalidate(self.__dataset, selected_col)
         else:
             print('ERROR: Failed to reload dataset!')
 
@@ -109,8 +114,8 @@ class PredictionApp(customtkinter.CTk):
         column = self.__predictable_col_string_var.get()
         print(column)
         self.__LRTabView.on_change_predictable_column(column)
-        self.__MLRTabView.on_change_predictable_column(column)
-        self.__SVRTabView.on_change_predictable_column(column)
+        self.__MLRTabView.invalidate(self.__dataset, column)
+        self.__SVRTabView.invalidate(self.__dataset, column)
 
     def __predict(self):
         current_tab = self.__main_tab_view.get()

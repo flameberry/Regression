@@ -17,8 +17,6 @@ class LRTabView:
         return LRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
-        self.dataset_path = ''
-
         self.__dataset = pd.DataFrame()
         self.__regression_model = LinearRegression()
         self.__x_train: np.array = None
@@ -45,11 +43,6 @@ class LRTabView:
         self.__plot_graph_checkbox = customtkinter.CTkCheckBox(self.__tab_view)
 
     def __create_layout(self):
-        # import and process dataset
-        self.__dataset = pd.read_csv(self.dataset_path)
-        self.__dataset = self.__dataset.select_dtypes(include=np.number)
-        self.__dataset.dropna(inplace=True)
-
         attribute_list = list(self.__dataset.columns.values)
         self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
         self.__independent_feature_option_menu.set(attribute_list[0])
@@ -62,7 +55,7 @@ class LRTabView:
         self.__plot_graph_checkbox.grid(row=0, column=2, padx=10, pady=10)
 
     def __plot(self):
-        if self.dataset_path != '':
+        if not self.__dataset.empty:
             figure = plt.Figure(figsize=(6, 5))
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
@@ -116,8 +109,8 @@ class LRTabView:
         r2score = r2_score(self.__y_test.reshape(-1, 1), predicted_values)
         print(f'Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
-    def invalidate(self, dataset_path: str, predictable_column: str):
-        self.dataset_path = dataset_path
+    def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
+        self.__dataset = dataset
         self.__predictable_column = predictable_column
 
         self.__invalidate_widgets()

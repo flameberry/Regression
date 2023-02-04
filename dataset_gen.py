@@ -62,33 +62,37 @@ def generate_random_dataset(size=10000):
     noise_mspend = 0.3 * np.random.normal(loc=mspend_dummy.mean(), scale=mspend_dummy.std(), size=mspend_dummy.size)
     mspend_dummy += noise_mspend
 
-    # y_dummy = np.array(power_law(mspend_dummy, 6500, 0.3))
     profit_dummy = np.array(sine(mspend_dummy, 1000000, 1.57 / mspend_dummy.max()))
-    noise = 0.2 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)  # Add noise from a Gaussian distribution
-    profit_dummy += noise
+    noise_profit = 0.2 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)  # Add noise from a Gaussian distribution
+    profit_dummy += noise_profit
 
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
     noise_admin = 0.2 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
 
-    # rdspend_dummy = 40000 * np.array(sine_reverse(y_dummy, y_dummy.max(), 0.1))
     rdspend_dummy = np.array(power_law_reverse(profit_dummy + 2 * 10 ** 5, 7500, 0.375))
     noise_rdspend = 0.2 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
 
+    psold_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
+    noise_psold = 0.2 * np.random.normal(loc=psold_dummy.mean(), scale=psold_dummy.std(), size=psold_dummy.size)
+    psold_dummy += noise_psold
+
     print('Marketing Spend Noise Range:', noise_mspend.min(), noise_mspend.max())
     print('Admin Noise Range:', noise_admin.min(), noise_admin.max())
     print('RDSpend Noise Range:', noise_rdspend.min(), noise_rdspend.max())
-    print('Profit Noise Range:', noise.min(), noise.max())
+    print('Products Sold Noise Range:', noise_psold.min(), noise_psold.max())
+    print('Profit Noise Range:', noise_profit.min(), noise_profit.max())
 
     print('')
 
     print(f'Marketing Spend range: {mspend_dummy.min()}, {mspend_dummy.max()}')
     print(f'Admin range: {admin_dummy.min()}, {admin_dummy.max()}')
     print(f'RDSpend range: {rdspend_dummy.min()}, {rdspend_dummy.max()}')
+    print(f'Products Sold range: {psold_dummy.min()}, {psold_dummy.max()}')
     print(f'Profit range: {profit_dummy.min()}, {profit_dummy.max()}')
 
-    dataset = pd.DataFrame({'Marketing Spend': mspend_dummy, 'Administration': admin_dummy, 'R&DSpend': rdspend_dummy, 'Profit': profit_dummy})
+    dataset = pd.DataFrame({'Marketing Spend': mspend_dummy, 'Administration': admin_dummy, 'R&DSpend': rdspend_dummy, 'Products Sold': psold_dummy, 'Profit': profit_dummy})
     return dataset
 
 
