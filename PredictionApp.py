@@ -8,6 +8,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 
+from DatasetTabView import DatasetTabView
 from LRTabView import LRTabView
 from MLRTabView import MLRTabView
 from SVRTabView import SVRTabView
@@ -58,10 +59,12 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
+        self.__main_tab_view.add(DatasetTabView.get_tab_name())
         self.__main_tab_view.add(LRTabView.get_tab_name())
         self.__main_tab_view.add(MLRTabView.get_tab_name())
         self.__main_tab_view.add(SVRTabView.get_tab_name())
 
+        self.__DatasetTabView = DatasetTabView(self.__main_tab_view.tab(DatasetTabView.get_tab_name()))
         self.__LRTabView = LRTabView(self.__main_tab_view.tab(LRTabView.get_tab_name()))
         self.__MLRTabView = MLRTabView(self.__main_tab_view.tab(MLRTabView.get_tab_name()))
         self.__SVRTabView = SVRTabView(self.__main_tab_view.tab(SVRTabView.get_tab_name()))
@@ -104,6 +107,7 @@ class PredictionApp(customtkinter.CTk):
             self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
 
             selected_col = self.__predictable_col_string_var.get()
+            self.__DatasetTabView.invalidate(self.__dataset)
             self.__LRTabView.invalidate(self.__dataset, selected_col)
             self.__MLRTabView.invalidate(self.__dataset, selected_col)
             self.__SVRTabView.invalidate(self.__dataset, selected_col)
@@ -113,7 +117,7 @@ class PredictionApp(customtkinter.CTk):
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()
         print(column)
-        self.__LRTabView.on_change_predictable_column(column)
+        self.__LRTabView.set_predictable_column(column)
         self.__MLRTabView.invalidate(self.__dataset, column)
         self.__SVRTabView.invalidate(self.__dataset, column)
 

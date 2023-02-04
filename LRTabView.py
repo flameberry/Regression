@@ -81,7 +81,7 @@ class LRTabView:
             canvas.draw()
             canvas.get_tk_widget().grid(row=2, column=0, columnspan=3)
 
-    def on_change_predictable_column(self, column: str):
+    def set_predictable_column(self, column: str):
         self.__predictable_column = column
         print(f'LR: Set predictable column as: {column}')
 
