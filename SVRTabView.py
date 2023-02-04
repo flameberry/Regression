@@ -135,7 +135,7 @@ class SVRTabView:
             r2score = r2_score(y_test, y_predicted)
             mse = mean_squared_error(y_test, y_predicted)
             rmse = np.sqrt(mse)
-            print(f'Support Vector Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
+            print(f'Support Vector Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset_path: str, predictable_column: str):
         reload = self.dataset_path != dataset_path

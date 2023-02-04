@@ -114,7 +114,7 @@ class LRTabView:
         mse = mean_squared_error(self.__y_test.reshape(-1, 1), predicted_values)
         rmse = np.sqrt(mse)
         r2score = r2_score(self.__y_test.reshape(-1, 1), predicted_values)
-        print(f'Linear Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
+        print(f'Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset_path: str, predictable_column: str):
         self.dataset_path = dataset_path

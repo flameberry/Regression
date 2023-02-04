@@ -121,7 +121,7 @@ class MLRTabView:
             r2score = r2_score(self.__y_test, y_predicted)
             mse = mean_squared_error(self.__y_test, y_predicted)
             rmse = np.sqrt(mse)
-            print(f'Multiple Linear Regression: R2_Score: {r2score}, RMSE: {rmse}, MSE: {mse}')
+            print(f'Multiple Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset_path: str, predictable_column: str):
         reload = True
