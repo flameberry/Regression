@@ -23,7 +23,7 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_col_string_var = None
 
         self.title("Profit Prediction")
-        self.geometry(f"{1000}x{800}")
+        self.geometry(f"{950}x{800}")
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)

@@ -15,22 +15,27 @@ class DatasetTabView:
         self.__tab_view = tab_view
         self.__dataset = pd.DataFrame()
 
+        self.__tab_view.rowconfigure(0, weight=1)
+        self.__tab_view.columnconfigure(0, weight=1)
+        self.__dataset_info_textbox: customtkinter.CTkTextbox
+
     def __create_layout(self):
-        if not self.__dataset.empty:
-            figure = plt.Figure(figsize=(6, 5))
-            figure.set_layout_engine("constrained")
-            ax = figure.subplots()
+        assert not self.__dataset.empty
+        figure = plt.Figure()
+        figure.set_layout_engine("constrained")
+        ax = figure.subplots()
 
-            self.__dataset.plot(ax=ax)
-            # ax.yaxis.set_label_position("right")
+        self.__dataset.plot(ax=ax)
 
-            canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
-            canvas.draw()
-            canvas.get_tk_widget().grid(row=0, column=0, columnspan=3)
+        canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=0, column=0, sticky='NSEW')
 
     def __invalidate_widgets(self):
         for widgets in self.__tab_view.winfo_children():
             widgets.destroy()
+
+        self.__dataset_info_textbox = customtkinter.CTkTextbox(master=self.__tab_view)
 
     def invalidate(self, dataset: pd.DataFrame):
         self.__dataset = dataset

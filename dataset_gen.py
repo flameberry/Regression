@@ -92,7 +92,7 @@ def generate_random_dataset(size=10000):
     print(f'Products Sold range: {psold_dummy.min()}, {psold_dummy.max()}')
     print(f'Profit range: {profit_dummy.min()}, {profit_dummy.max()}')
 
-    dataset = pd.DataFrame({'Marketing Spend': mspend_dummy, 'Administration': admin_dummy, 'R&DSpend': rdspend_dummy, 'Products Sold': psold_dummy, 'Profit': profit_dummy})
+    dataset = pd.DataFrame({'Marketing Spend': mspend_dummy, 'Administration': admin_dummy, 'R&D Spend': rdspend_dummy, 'Products Sold': psold_dummy, 'Profit': profit_dummy})
     return dataset
 
 

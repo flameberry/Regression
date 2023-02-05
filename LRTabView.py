@@ -43,6 +43,8 @@ class LRTabView:
         self.__plot_graph_checkbox = customtkinter.CTkCheckBox(self.__tab_view)
 
     def __create_layout(self):
+        # self.__tab_view.columnconfigure((0, 1, 2), weight=1)
+
         attribute_list = list(self.__dataset.columns.values)
         self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
         self.__independent_feature_option_menu.set(attribute_list[0])

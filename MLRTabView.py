@@ -96,7 +96,6 @@ class MLRTabView:
         if not self.__dataset.empty:
             feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
             predicted_value = self.__regression_model.predict(feature_list)
-            print(predicted_value)
             self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {predicted_value[0]}',
                                                    font=customtkinter.CTkFont(size=20, weight="bold"))
             self.__predicted_value_label.grid(row=self.row_index, column=0,
