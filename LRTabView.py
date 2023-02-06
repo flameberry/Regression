@@ -67,14 +67,10 @@ class LRTabView:
 
             y_predicted = self.__regression_model.predict(self.__x_test.reshape(-1, 1))
             scatter_df = pd.DataFrame(data={f'{x_name}_Actual': self.__dataset[x_name], f'{y_name}_Actual': self.__dataset[y_name]}) # TODO: Design Decision
-            # scatter_df = pd.DataFrame(data={f'{x_name}_Actual': self.__x_test, f'{y_name}_Actual': self.__y_test})
             predicted_df = pd.DataFrame(data={'X_Actual': self.__x_test, 'Y_Predicted': y_predicted.ravel()})
 
-            # comparison_df = pd.DataFrame(data={'Y_Actual': self.__y_test, 'Y_Predicted': y_predicted.ravel()})
-            # y_difference = comparison_df.eval("Y_Predicted - Y_Actual").rename("Y_Difference")
-            # diff_range = min(abs(y_difference.min()), abs(y_difference.max()))
-
-            sns.scatterplot(data=scatter_df, x=f'{x_name}_Actual', y=f'{y_name}_Actual', ax=ax, hue=f'{y_name}_Actual', s=15)  # TODO: Fixme
+            cpalette = sns.color_palette("flare", as_cmap=True)
+            sns.scatterplot(data=scatter_df, x=f'{x_name}_Actual', y=f'{y_name}_Actual', ax=ax, hue=f'{y_name}_Actual', s=15, palette=cpalette, linewidth=0.2)  # TODO: Fixme
             ax.yaxis.set_label_position("right")
 
             sns.lineplot(data=predicted_df, x='X_Actual', y='Y_Predicted', ax=ax, color='orange')

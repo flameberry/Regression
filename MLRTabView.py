@@ -80,12 +80,10 @@ class MLRTabView:
             ax = figure.subplots()
 
             y_predicted = self.__regression_model.predict(self.__x_test)
-            comparison_df = pd.DataFrame(data={'Y_Actual': self.__y_test, 'Y_Predicted': y_predicted})
+            comparison_df = pd.DataFrame(data={'Y_Actual': self.__y_test, 'Y_Predicted': y_predicted}, index=range(0, len(y_predicted)))
             y_difference = comparison_df.eval("Y_Predicted - Y_Actual").rename("Y_Difference")
-            diff_range = min(abs(y_difference.min()), abs(y_difference.max()))
 
-            sns.scatterplot(data=comparison_df, x='Y_Actual', y='Y_Predicted', ax=ax, hue=y_difference,
-                            size=y_difference, size_norm=(-diff_range, diff_range))
+            sns.histplot(y_difference, kde=True, ax=ax)
             ax.yaxis.set_label_position("right")
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)

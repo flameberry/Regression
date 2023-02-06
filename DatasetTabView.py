@@ -17,7 +17,6 @@ class DatasetTabView:
 
         self.__tab_view.rowconfigure(0, weight=1)
         self.__tab_view.columnconfigure(0, weight=1)
-        self.__dataset_info_textbox: customtkinter.CTkTextbox
 
     def __create_layout(self):
         assert not self.__dataset.empty
@@ -34,8 +33,6 @@ class DatasetTabView:
     def __invalidate_widgets(self):
         for widgets in self.__tab_view.winfo_children():
             widgets.destroy()
-
-        self.__dataset_info_textbox = customtkinter.CTkTextbox(master=self.__tab_view)
 
     def invalidate(self, dataset: pd.DataFrame):
         self.__dataset = dataset
