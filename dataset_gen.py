@@ -54,6 +54,18 @@ def sine_reverse(y, a, b):
     return np.arcsin(y / a) / b
 
 
+def ellipse_reverse(y, a, b):
+    return np.sqrt(abs(a * a * (1 - (y * y) / (b * b))))
+
+
+def half_life_inverse(y, a, offset_x=0, offset_y=0):
+    return offset_x + a / (y - offset_y)
+
+
+def rect_hyperbola_inverse(y, a):
+    return np.sqrt(abs(a * a + y * y))
+
+
 def generate_random_dataset(size=10000):
     range_min = 50000
     range_max = 650000
@@ -64,29 +76,39 @@ def generate_random_dataset(size=10000):
     mspend_dummy = abs(mspend_dummy)
 
     profit_dummy = np.array(sine(mspend_dummy, 1000000, 1.57 / mspend_dummy.max()))
-    noise_profit = 0.4 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)  # Add noise from a Gaussian distribution
+    noise_profit = 0.5 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)
     profit_dummy += noise_profit
     profit_dummy = abs(profit_dummy)
 
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
-    noise_admin = 0.4 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
+    noise_admin = 0.6 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
     admin_dummy = abs(admin_dummy)
 
-    rdspend_dummy = np.array(power_law_reverse(profit_dummy + 2 * 10 ** 5, 7500, 0.375))
+    rdspend_dummy = np.array(power_law_reverse(profit_dummy + 0 * 10 ** 5, 7500, 0.375))
     noise_rdspend = 0.4 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
     rdspend_dummy = abs(rdspend_dummy)
 
     sales_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
-    noise_sales = 0.6 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
+    noise_sales = 0.5 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
     sales_dummy += noise_sales
     sales_dummy = abs(sales_dummy)
+
+    operations_dummy = np.array(ellipse_reverse(profit_dummy, 10 * 10 ** 5, 6 * 10 ** 5))
+    # operations_dummy = np.array(rect_hyperbola_inverse(profit_dummy, 10 ** 6))
+    operations_dummy = np.array(half_life_inverse(profit_dummy, 10 ** 11.7, 10 ** 6, -10 ** 5))
+    noise_operations = 0.8 * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
+    operations_dummy += noise_operations - 7 * 10 ** 5
+    # operations_dummy = abs(operations_dummy)
+
+    np.clip(operations_dummy, 10 ** 4, 20 * 10 ** 5)
 
     print('Marketing Spend Noise Range:', noise_mspend.min(), noise_mspend.max())
     print('Admin Noise Range:', noise_admin.min(), noise_admin.max())
     print('RDSpend Noise Range:', noise_rdspend.min(), noise_rdspend.max())
     print('Sales Noise Range:', noise_sales.min(), noise_sales.max())
+    print('Operations Noise Range:', noise_operations.min(), noise_operations.max())
     print('Profit Noise Range:', noise_profit.min(), noise_profit.max())
 
     print('')
@@ -95,9 +117,17 @@ def generate_random_dataset(size=10000):
     print(f'Admin range: {admin_dummy.min()}, {admin_dummy.max()}')
     print(f'RDSpend range: {rdspend_dummy.min()}, {rdspend_dummy.max()}')
     print(f'Sales range: {sales_dummy.min()}, {sales_dummy.max()}')
+    print(f'Operations range: {operations_dummy.min()}, {operations_dummy.max()}')
     print(f'Profit range: {profit_dummy.min()}, {profit_dummy.max()}')
 
-    dataset = pd.DataFrame({'Marketing Spend': mspend_dummy, 'Administration': admin_dummy, 'R&D Spend': rdspend_dummy, 'Sales': sales_dummy, 'Profit': profit_dummy})
+    dataset = pd.DataFrame({
+        'Marketing Spend': mspend_dummy,
+        'Administration': admin_dummy,
+        'R&D Spend': rdspend_dummy,
+        'Sales': sales_dummy,
+        'Operations': operations_dummy,
+        'Profit': profit_dummy
+    })
     return dataset
 
 
