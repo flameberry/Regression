@@ -81,17 +81,17 @@ def generate_random_dataset(size=10000):
     profit_dummy = abs(profit_dummy)
 
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
-    noise_admin = 0.6 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
+    noise_admin = 0.9 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
     admin_dummy = abs(admin_dummy)
 
     rdspend_dummy = np.array(power_law_reverse(profit_dummy + 0 * 10 ** 5, 7500, 0.375))
-    noise_rdspend = 0.4 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
+    noise_rdspend = 0.9 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
     rdspend_dummy = abs(rdspend_dummy)
 
     sales_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
-    noise_sales = 0.5 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
+    noise_sales = 0.9 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
     sales_dummy += noise_sales
     sales_dummy = abs(sales_dummy)
 
