@@ -61,22 +61,27 @@ def generate_random_dataset(size=10000):
     mspend_dummy = np.linspace(start=range_min, stop=range_max, num=size)
     noise_mspend = 0.3 * np.random.normal(loc=mspend_dummy.mean(), scale=mspend_dummy.std(), size=mspend_dummy.size)
     mspend_dummy += noise_mspend
+    mspend_dummy = abs(mspend_dummy)
 
     profit_dummy = np.array(sine(mspend_dummy, 1000000, 1.57 / mspend_dummy.max()))
-    noise_profit = 0.2 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)  # Add noise from a Gaussian distribution
+    noise_profit = 0.4 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)  # Add noise from a Gaussian distribution
     profit_dummy += noise_profit
+    profit_dummy = abs(profit_dummy)
 
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
-    noise_admin = 0.2 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
+    noise_admin = 0.4 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
+    admin_dummy = abs(admin_dummy)
 
     rdspend_dummy = np.array(power_law_reverse(profit_dummy + 2 * 10 ** 5, 7500, 0.375))
-    noise_rdspend = 0.2 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
+    noise_rdspend = 0.4 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
+    rdspend_dummy = abs(rdspend_dummy)
 
     sales_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
-    noise_sales = 0.2 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
+    noise_sales = 0.6 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
     sales_dummy += noise_sales
+    sales_dummy = abs(sales_dummy)
 
     print('Marketing Spend Noise Range:', noise_mspend.min(), noise_mspend.max())
     print('Admin Noise Range:', noise_admin.min(), noise_admin.max())
