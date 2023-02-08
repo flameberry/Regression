@@ -26,6 +26,10 @@ class DatasetTabView:
 
         self.__dataset.plot(ax=ax)
 
+        ax.yaxis.set_label('Row Values')  # Fixme: Labels not being shown
+        ax.xaxis.set_label('Row Indices')
+        ax.yaxis.set_label_position("right")
+
         canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
         canvas.draw()
         canvas.get_tk_widget().grid(row=0, column=0, sticky='NSEW')
