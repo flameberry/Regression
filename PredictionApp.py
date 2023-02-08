@@ -52,7 +52,7 @@ class PredictionApp(customtkinter.CTk):
         self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', state='disabled', command=self.__reload_dataset)
         self.__reload_button.grid(row=6, column=0, padx=20, pady=10)
 
-        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=200,
+        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=150,
                                                            font=customtkinter.CTkFont(weight='bold'))
         self.__dataset_name_label.grid(row=7, column=0, padx=20, pady=10)
 
