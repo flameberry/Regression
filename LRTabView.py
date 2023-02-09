@@ -24,6 +24,7 @@ class LRTabView:
         self.__y_train: np.array = None
         self.__y_test: np.array = None
         self.__predictable_column = ''
+        self.__independent_col_just_predicted = ''
 
         self.__tab_view = tab_view
 
@@ -86,6 +87,7 @@ class LRTabView:
     def predict(self):
         # Training the model
         selected_column = self.__independent_feature_option_menu.get()
+        self.__independent_col_just_predicted = selected_column
         x = self.__dataset[selected_column].values
         y = self.__dataset[self.__predictable_column].values
 
@@ -101,11 +103,12 @@ class LRTabView:
             self.__plot()
 
     def accuracy(self):
+        assert len(self.__independent_col_just_predicted) != 0
         predicted_values = self.__regression_model.predict(self.__x_test.reshape(-1, 1))
         mse = mean_squared_error(self.__y_test.reshape(-1, 1), predicted_values)
         rmse = np.sqrt(mse)
         r2score = r2_score(self.__y_test.reshape(-1, 1), predicted_values)
-        print(f'Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
+        print(f'Linear Regression ({self.__independent_col_just_predicted}): R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
         self.__dataset = dataset
