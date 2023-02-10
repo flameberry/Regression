@@ -133,6 +133,6 @@ def generate_random_dataset(size=10000):
 
 if __name__ == '__main__':
     random_dataset = generate_random_dataset()
-    random_dataset.to_csv('datasets/random_dataset.csv', index=False)
+    random_dataset.to_csv('../datasets/random_dataset.csv', index=False)
     random_dataset.plot()
     plt.show()
