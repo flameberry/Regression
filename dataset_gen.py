@@ -95,7 +95,7 @@ def generate_random_dataset(size=10000):
     sales_dummy += noise_sales
     sales_dummy = abs(sales_dummy)
 
-    operations_dummy = np.array(ellipse_reverse(profit_dummy, 10 * 10 ** 5, 6 * 10 ** 5))
+    # operations_dummy = np.array(ellipse_reverse(profit_dummy, 10 * 10 ** 5, 6 * 10 ** 5))
     # operations_dummy = np.array(rect_hyperbola_inverse(profit_dummy, 10 ** 6))
     operations_dummy = np.array(half_life_inverse(profit_dummy, 10 ** 11.7, 10 ** 6, -10 ** 5))
     noise_operations = 0.8 * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
