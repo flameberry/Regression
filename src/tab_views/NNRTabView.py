@@ -1,3 +1,5 @@
+import datetime
+
 import customtkinter
 import numpy as np
 import pandas as pd
@@ -217,6 +219,10 @@ class NNRTabView:
             steps_per_epoch=STEPS_PER_EPOCH,
             validation_data=(self.__x_test, self.__y_test)
         )
+
+        # Saving the model for later use
+        self.__regression_model.save(f'models/DNNR_Model_{datetime.datetime.now()}')
+
         self.__plot()
 
     def __plot(self):
