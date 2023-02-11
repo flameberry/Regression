@@ -16,10 +16,11 @@ from src.tab_views.NNRTabView import NNRTabView
 from src.tab_views.RFRTabView import RFRTabView
 
 
-def center(win):
+def center(win, parent=None):
     """
     centers a tkinter window
     :param win: the main window or Toplevel window to center
+    :param parent: the parent window relative to which `win` will be centered
     """
     win.update_idletasks()
     win.withdraw()
@@ -29,8 +30,14 @@ def center(win):
     height = win.winfo_height()
     titlebar_height = win.winfo_rooty() - win.winfo_y()
     win_height = height + titlebar_height + frm_width
-    x = win.winfo_screenwidth() // 2 - win_width // 2
-    y = win.winfo_screenheight() // 2 - win_height // 2
+
+    if parent is None:
+        x = win.winfo_screenwidth() // 2 - win_width // 2
+        y = win.winfo_screenheight() // 2 - win_height // 2
+    else:
+        x = parent.winfo_width() // 2 - win_width // 2
+        y = parent.winfo_height() // 2 - win_height // 2
+
     win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
     win.deiconify()
 
@@ -138,6 +145,7 @@ class PredictionApp(customtkinter.CTk):
 
             for tab_view in self.__tab_views:
                 self.__loading_widget_label.configure(text=f'Creating {type(tab_view).__name__}....')
+                self.__progress_bar.step()
                 self.__loading_widget.update_idletasks()
                 tab_view.invalidate(self.__dataset, selected_col)
         else:
@@ -147,7 +155,7 @@ class PredictionApp(customtkinter.CTk):
         self.__loading_widget = customtkinter.CTkToplevel(self)
         self.__loading_widget.title('Loading')
         self.__loading_widget.geometry('400x75')
-        center(self.__loading_widget)
+        center(self.__loading_widget, parent=self)
 
         self.__loading_widget.grab_set()
         self.__loading_widget.transient(self)
@@ -158,10 +166,6 @@ class PredictionApp(customtkinter.CTk):
         self.__progress_bar = customtkinter.CTkProgressBar(self.__loading_widget, mode='indeterminate', width=300)
         self.__progress_bar.pack()
         self.__progress_bar.start()
-
-        self.__loading_widget.update_idletasks()
-        self.__loading_widget.update()
-        self.update()
         # self.__loading_widget.mainloop()
 
     def __predictable_column_callback(self, *args):
