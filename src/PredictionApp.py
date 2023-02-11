@@ -13,7 +13,7 @@ from src.tab_views.LRTabView import LRTabView
 from src.tab_views.MLRTabView import MLRTabView
 from src.tab_views.SVRTabView import SVRTabView
 from src.tab_views.RFRTabView import RFRTabView
-# from src.tab_views.NNRTabView import NNRTabView
+from src.tab_views.NNRTabView import NNRTabView
 
 
 def center(win, parent=None):
@@ -94,8 +94,8 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
-        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
-        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
+        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
+        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
         self.__tab_views = []
 
         for tab_view_type in self.__tab_view_types:

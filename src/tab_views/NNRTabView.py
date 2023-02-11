@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import seaborn as sns
 
+import tensorflow as tf
 from keras import Sequential
 from sklearn.preprocessing import StandardScaler
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
@@ -164,21 +165,54 @@ class NNRTabView:
             self.__standard_scaler.transform(self.__x_test)
         )
 
+        N_TRAIN = len(self.__x_train)
+        BATCH_SIZE = 500
+        STEPS_PER_EPOCH = max(1, N_TRAIN // BATCH_SIZE)
+        max_epochs = 1000
+
+        lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(
+            0.001,
+            decay_steps=STEPS_PER_EPOCH * 1000,
+            decay_rate=1,
+            staircase=False
+        )
+
+        def get_optimizer():
+            return tf.keras.optimizers.Adam(lr_schedule)
+
         self.__regression_model = Sequential()
         # Input Layer
-        self.__regression_model.add(Dense(128, kernel_initializer='normal', input_dim=len(self.__dataset.columns) - 1, activation='relu'))
+        self.__regression_model.add(Dense(64, kernel_initializer='normal', input_dim=len(self.__dataset.columns) - 1, activation='relu'))
 
         # Hidden Layers
-        self.__regression_model.add(Dense(256, kernel_initializer='normal', activation='relu'))
+        self.__regression_model.add(Dropout(0.2))
+        self.__regression_model.add(Dense(128, kernel_initializer='normal', activation='relu'))
+        self.__regression_model.add(Dropout(0.2))
         # self.__regression_model.add(Dense(256, kernel_initializer='normal', activation='relu'))
         # self.__regression_model.add(Dense(256, kernel_initializer='normal', activation='relu'))
 
         # Output Layer
         self.__regression_model.add(Dense(1, kernel_initializer='normal', activation='linear'))
-        self.__regression_model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_squared_error'])
+
+        msle = tf.keras.losses.MeanSquaredLogarithmicError()
+        self.__regression_model.compile(
+            # loss='mean_squared_error',
+            loss=msle,
+            optimizer=get_optimizer(),
+            metrics=[msle]
+            # metrics=['mean_squared_error']
+        )
+
         print(self.__regression_model.summary())
 
-        self.__history = self.__regression_model.fit(self.__x_train, self.__y_train, verbose=1, epochs=1000, validation_data=(self.__x_test, self.__y_test))
+        self.__history = self.__regression_model.fit(
+            self.__x_train,
+            self.__y_train,
+            verbose=1,
+            epochs=max_epochs,
+            steps_per_epoch=STEPS_PER_EPOCH,
+            validation_data=(self.__x_test, self.__y_test)
+        )
         self.__plot()
 
     def __plot(self):
@@ -194,6 +228,8 @@ class NNRTabView:
 
             sns.lineplot(x=epochs, y=loss, label='Training loss', ax=ax)
             sns.lineplot(x=epochs, y=val_loss, label='Validation loss', ax=ax)
+            ax.xaxis.set_label('Epochs')
+            ax.yaxis.set_label('Loss')
 
             # plt.plot(epochs, loss, 'y', label='Training loss')
             # plt.plot(epochs, val_loss, 'r', label='Validation loss')
