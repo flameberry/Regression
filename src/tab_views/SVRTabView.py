@@ -11,6 +11,10 @@ from sklearn.svm import SVR
 
 
 class SVRTabView:
+    """
+    This class contains a Support Vector Regressor from sklearn
+    to train on multiple columns of a dataset and predict values
+    """
     __tab_name = 'SVR'
 
     @staticmethod

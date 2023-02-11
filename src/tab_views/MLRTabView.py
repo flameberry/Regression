@@ -10,6 +10,10 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 class MLRTabView:
+    """
+    This class contains a Linear Regressor from sklearn to train on a dataset
+    and predict values based on multiple columns
+    """
     __tab_name = 'MLR'
 
     @staticmethod

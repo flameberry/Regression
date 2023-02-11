@@ -44,6 +44,10 @@ def center(win, parent=None):
 
 
 class PredictionApp(customtkinter.CTk):
+    """
+    This class contains the complete user interface of the app
+    to compare multiple regression methods
+    """
     def __init__(self):
         super().__init__()
 

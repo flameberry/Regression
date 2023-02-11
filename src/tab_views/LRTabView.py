@@ -10,6 +10,10 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 class LRTabView:
+    """
+    This class contains a Random Forest Regressor from sklearn
+    to train on a single column of a dataset and predict values
+    """
     __tab_name = 'LR'
 
     @staticmethod

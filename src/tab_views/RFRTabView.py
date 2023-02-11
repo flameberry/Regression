@@ -11,6 +11,10 @@ from datetime import datetime
 
 
 class RFRTabView:
+    """
+    This class contains a Random Forest Regressor from sklearn
+    to train on multiple columns of a dataset and predict values
+    """
     __tab_name = 'RFR'
 
     @staticmethod

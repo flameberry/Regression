@@ -91,6 +91,10 @@ from sklearn.metrics import r2_score, mean_squared_error
 # x_test['prediction'] = model.predict(x_test_scaled)
 
 class NNRTabView:
+    """
+    This class contains a Deep Neural Network Regressor from tensorflow
+    to train on a dataset and predict values
+    """
     __tab_name = 'NNR'
 
     @staticmethod

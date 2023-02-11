@@ -5,6 +5,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class DatasetTabView:
+    """
+    This class contains functions to describe a dataset using pandas module
+    """
     __tab_name = 'Dataset'
 
     @staticmethod
