@@ -19,7 +19,7 @@ class RFRTabView:
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__dataset = pd.DataFrame()
-        self.__regression_model = RandomForestRegressor(n_estimators=100, random_state=0)
+        self.__regression_model = RandomForestRegressor(n_estimators=100, random_state=1)
         self.__x_train: np.array = None
         self.__x_test: np.array = None
         self.__y_train: np.array = None
@@ -89,12 +89,18 @@ class RFRTabView:
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
 
-            y_predicted = self.__regression_model.predict(self.__x_test)
-            comparison_df = pd.DataFrame(data={'Y_Actual': self.__y_test, 'Y_Predicted': y_predicted}, index=range(0, len(y_predicted)))
-            y_difference = comparison_df.eval("Y_Predicted - Y_Actual").rename("Y_Difference")
+            # y_predicted = self.__regression_model.predict(self.__x_test)
+            # comparison_df = pd.DataFrame(data={'Y_Actual': self.__y_test, 'Y_Predicted': y_predicted}, index=range(0, len(y_predicted)))
+            # y_difference = comparison_df.eval("Y_Predicted - Y_Actual").rename("Y_Difference")
+            #
+            # sns.histplot(y_difference, kde=True, ax=ax)
+            # ax.yaxis.set_label_position("right")
 
-            sns.histplot(y_difference, kde=True, ax=ax)
-            ax.yaxis.set_label_position("right")
+            attribute_list: list[str] = list(self.__dataset.columns.values)
+            attribute_list.remove(self.__predictable_column)
+
+            model_ranks = pd.Series(self.__regression_model.feature_importances_, index=attribute_list, name='Importance').sort_values(ascending=True, inplace=False)
+            model_ranks.plot(ax=ax, kind='barh')
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()

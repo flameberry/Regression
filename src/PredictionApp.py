@@ -12,8 +12,8 @@ from src.tab_views.DatasetTabView import DatasetTabView
 from src.tab_views.LRTabView import LRTabView
 from src.tab_views.MLRTabView import MLRTabView
 from src.tab_views.SVRTabView import SVRTabView
-from src.tab_views.NNRTabView import NNRTabView
 from src.tab_views.RFRTabView import RFRTabView
+# from src.tab_views.NNRTabView import NNRTabView
 
 
 def center(win, parent=None):
@@ -26,6 +26,7 @@ def center(win, parent=None):
     win.withdraw()
     width = win.winfo_width()
     frm_width = win.winfo_rootx() - win.winfo_x()
+
     win_width = width + 2 * frm_width
     height = win.winfo_height()
     titlebar_height = win.winfo_rooty() - win.winfo_y()
@@ -35,8 +36,8 @@ def center(win, parent=None):
         x = win.winfo_screenwidth() // 2 - win_width // 2
         y = win.winfo_screenheight() // 2 - win_height // 2
     else:
-        x = parent.winfo_width() // 2 - win_width // 2
-        y = parent.winfo_height() // 2 - win_height // 2
+        x = parent.winfo_width() // 2 - win_width // 2 + parent.winfo_x()
+        y = parent.winfo_height() // 2 - win_height // 2 + parent.winfo_y()
 
     win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
     win.deiconify()
@@ -153,7 +154,7 @@ class PredictionApp(customtkinter.CTk):
 
     def __create_loading_widget(self):
         self.__loading_widget = customtkinter.CTkToplevel(self)
-        self.__loading_widget.title('Loading')
+        self.__loading_widget.title('Loading Dataset')
         self.__loading_widget.geometry('400x75')
         center(self.__loading_widget, parent=self)
 
@@ -166,7 +167,6 @@ class PredictionApp(customtkinter.CTk):
         self.__progress_bar = customtkinter.CTkProgressBar(self.__loading_widget, mode='indeterminate', width=300)
         self.__progress_bar.pack()
         self.__progress_bar.start()
-        # self.__loading_widget.mainloop()
 
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()

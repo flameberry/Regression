@@ -222,7 +222,7 @@ class NNRTabView:
         # print(self.__y_test, prediction_test)
         r2score = r2_score(self.__y_test, prediction_test)
         mse = np.mean(prediction_test - self.__y_test) ** 2
-        print(f"Neural Network Regression: RMSE: {np.sqrt(mse)}, MSE: {mse}")
+        print(f"Neural Network Regression: R2 Score: {r2score * 100}%, RMSE: {np.sqrt(mse)}, MSE: {mse}")
 
     def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
         self.__dataset = dataset
