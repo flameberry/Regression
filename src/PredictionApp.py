@@ -16,6 +16,25 @@ from src.tab_views.NNRTabView import NNRTabView
 from src.tab_views.RFRTabView import RFRTabView
 
 
+def center(win):
+    """
+    centers a tkinter window
+    :param win: the main window or Toplevel window to center
+    """
+    win.update_idletasks()
+    win.withdraw()
+    width = win.winfo_width()
+    frm_width = win.winfo_rootx() - win.winfo_x()
+    win_width = width + 2 * frm_width
+    height = win.winfo_height()
+    titlebar_height = win.winfo_rooty() - win.winfo_y()
+    win_height = height + titlebar_height + frm_width
+    x = win.winfo_screenwidth() // 2 - win_width // 2
+    y = win.winfo_screenheight() // 2 - win_height // 2
+    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+    win.deiconify()
+
+
 class PredictionApp(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -24,8 +43,14 @@ class PredictionApp(customtkinter.CTk):
         self.__dataset = pd.DataFrame()
         self.__predictable_col_string_var = None
 
+        self.__loading_widget = None
+        self.__loading_widget_label: customtkinter.CTkLabel
+        self.__progress_bar: customtkinter.CTkProgressBar
+
         self.title("Profit Prediction")
         self.geometry(f"{950}x{800}")
+
+        center(self)
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)
@@ -61,19 +86,14 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
-        self.__main_tab_view.add(DatasetTabView.get_tab_name())
-        self.__main_tab_view.add(LRTabView.get_tab_name())
-        self.__main_tab_view.add(MLRTabView.get_tab_name())
-        self.__main_tab_view.add(SVRTabView.get_tab_name())
-        self.__main_tab_view.add(NNRTabView.get_tab_name())
-        self.__main_tab_view.add(RFRTabView.get_tab_name())
+        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
+        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
+        self.__tab_views = []
 
-        self.__DatasetTabView = DatasetTabView(self.__main_tab_view.tab(DatasetTabView.get_tab_name()))
-        self.__LRTabView = LRTabView(self.__main_tab_view.tab(LRTabView.get_tab_name()))
-        self.__MLRTabView = MLRTabView(self.__main_tab_view.tab(MLRTabView.get_tab_name()))
-        self.__SVRTabView = SVRTabView(self.__main_tab_view.tab(SVRTabView.get_tab_name()))
-        self.__NNRTabView = NNRTabView(self.__main_tab_view.tab(NNRTabView.get_tab_name()))
-        self.__RFRTabView = RFRTabView(self.__main_tab_view.tab(RFRTabView.get_tab_name()))
+        for tab_view_type in self.__tab_view_types:
+            tab_name = tab_view_type.get_tab_name()
+            self.__main_tab_view.add(tab_name)
+            self.__tab_views.append(tab_view_type(self.__main_tab_view.tab(tab_name)))
 
         sns.set_theme()
 
@@ -91,7 +111,9 @@ class PredictionApp(customtkinter.CTk):
             file_name = path.split('/')[-1]
             self.__dataset_name_label.configure(text=file_name)
 
+            self.__create_loading_widget()
             self.__reload_dataset()
+            self.__loading_widget.destroy()
 
     def __reload_dataset(self):
         if len(self.__dataset_path):
@@ -113,46 +135,49 @@ class PredictionApp(customtkinter.CTk):
             self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
 
             selected_col = self.__predictable_col_string_var.get()
-            self.__DatasetTabView.invalidate(self.__dataset)
-            self.__LRTabView.invalidate(self.__dataset, selected_col)
-            self.__MLRTabView.invalidate(self.__dataset, selected_col)
-            self.__SVRTabView.invalidate(self.__dataset, selected_col)
-            # self.__NNRTabView.invalidate(self.__dataset, selected_col)
-            self.__RFRTabView.invalidate(self.__dataset, selected_col)
+
+            for tab_view in self.__tab_views:
+                self.__loading_widget_label.configure(text=f'Creating {type(tab_view).__name__}....')
+                self.__loading_widget.update_idletasks()
+                tab_view.invalidate(self.__dataset, selected_col)
         else:
             print('ERROR: Failed to reload dataset!')
+
+    def __create_loading_widget(self):
+        self.__loading_widget = customtkinter.CTkToplevel(self)
+        self.__loading_widget.title('Loading')
+        self.__loading_widget.geometry('400x75')
+        center(self.__loading_widget)
+
+        self.__loading_widget.grab_set()
+        self.__loading_widget.transient(self)
+
+        self.__loading_widget_label = customtkinter.CTkLabel(self.__loading_widget, text='Loading dataset...', font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.__loading_widget_label.pack(pady=10)
+
+        self.__progress_bar = customtkinter.CTkProgressBar(self.__loading_widget, mode='indeterminate', width=300)
+        self.__progress_bar.pack()
+        self.__progress_bar.start()
+
+        self.__loading_widget.update_idletasks()
+        self.__loading_widget.update()
+        self.update()
+        # self.__loading_widget.mainloop()
 
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()
         print(column)
-        self.__LRTabView.set_predictable_column(column)
-        self.__MLRTabView.invalidate(self.__dataset, column)
-        self.__SVRTabView.invalidate(self.__dataset, column)
-        self.__NNRTabView.invalidate(self.__dataset, column)
-        self.__RFRTabView.invalidate(self.__dataset, column)
+        for tab_view in self.__tab_views:
+            tab_view.invalidate(self.__dataset, column)
 
     def __predict(self):
         current_tab = self.__main_tab_view.get()
-        if current_tab == self.__LRTabView.get_tab_name():
-            self.__LRTabView.predict()
-        elif current_tab == self.__MLRTabView.get_tab_name():
-            self.__MLRTabView.predict()
-        elif current_tab == self.__SVRTabView.get_tab_name():
-            self.__SVRTabView.predict()
-        elif current_tab == self.__NNRTabView.get_tab_name():
-            self.__NNRTabView.predict()
-        elif current_tab == self.__RFRTabView.get_tab_name():
-            self.__RFRTabView.predict()
+        for tab_view in self.__tab_views:
+            if current_tab == type(tab_view).get_tab_name():
+                tab_view.predict()
 
     def __accuracy(self):
         current_tab = self.__main_tab_view.get()
-        if current_tab == self.__LRTabView.get_tab_name():
-            self.__LRTabView.accuracy()
-        elif current_tab == self.__MLRTabView.get_tab_name():
-            self.__MLRTabView.accuracy()
-        elif current_tab == self.__SVRTabView.get_tab_name():
-            self.__SVRTabView.accuracy()
-        elif current_tab == self.__NNRTabView.get_tab_name():
-            self.__NNRTabView.accuracy()
-        elif current_tab == self.__RFRTabView.get_tab_name():
-            self.__RFRTabView.accuracy()
+        for tab_view in self.__tab_views:
+            if current_tab == type(tab_view).get_tab_name():
+                tab_view.accuracy()

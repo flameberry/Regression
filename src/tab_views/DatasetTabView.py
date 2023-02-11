@@ -38,7 +38,7 @@ class DatasetTabView:
         for widgets in self.__tab_view.winfo_children():
             widgets.destroy()
 
-    def invalidate(self, dataset: pd.DataFrame):
+    def invalidate(self, dataset: pd.DataFrame, *args):
         self.__dataset = dataset
 
         self.__invalidate_widgets()

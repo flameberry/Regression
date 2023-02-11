@@ -5,20 +5,11 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import seaborn as sns
 
-import tensorflow as tf
 from keras import Sequential
-from keras.optimizers import Adam
 from sklearn.preprocessing import StandardScaler
-from keras.layers import Dense, Dropout
+from keras.layers import Dense
 from sklearn.model_selection import train_test_split
-from keras.losses import MeanSquaredLogarithmicError
 from sklearn.metrics import r2_score, mean_squared_error
-
-TRAIN_DATA_PATH = '~/Downloads/california_housing_train.csv'
-TEST_DATA_PATH = '~/Downloads/california_housing_test.csv'
-TARGET_NAME = 'median_house_value'
-
-print("TensorFlow version:", tf.__version__)
 
 # x_train = features, y_train = target
 # train_data = pd.read_csv(TRAIN_DATA_PATH)
