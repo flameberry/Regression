@@ -2,10 +2,13 @@
 
 pushd %~dp0\..\
 
+DIRECTORY=%~dp0\..\venv
+
 if not exist venv\ (
-    python -m venv venv\
+    python -m venv %DIRECTORY%
 )
-call .\venv\Scripts\activate.bat
+call %DIRECTORY%\Scripts\activate.bat
+
 pip install pandas seaborn customtkinter scikit-learn numpy
 
 set /p input = "Would you like to use tensorflow for Neural Network Regression? (Y/n): "

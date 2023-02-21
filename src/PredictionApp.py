@@ -8,12 +8,12 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 
-from src.tab_views.DatasetTabView import DatasetTabView
-from src.tab_views.LRTabView import LRTabView
-from src.tab_views.MLRTabView import MLRTabView
-from src.tab_views.SVRTabView import SVRTabView
-from src.tab_views.RFRTabView import RFRTabView
-# from src.tab_views.NNRTabView import NNRTabView
+from tab_views.DatasetTabView import DatasetTabView
+from tab_views.LRTabView import LRTabView
+from tab_views.MLRTabView import MLRTabView
+from tab_views.SVRTabView import SVRTabView
+from tab_views.RFRTabView import RFRTabView
+# from tab_views.NNRTabView import NNRTabView
 
 def center(win, parent=None):
     """
@@ -117,7 +117,7 @@ class PredictionApp(customtkinter.CTk):
     def import_dataset(self):
         path = filedialog.askopenfilename(
             title='Select dataset file',
-            initialdir=pathlib.Path(__file__).parent,
+            initialdir=pathlib.Path(__file__).parent.parent,
             filetypes=(("CSV Files", "*.csv"), ("All Files", "*.*"))
         )
         if path == '':

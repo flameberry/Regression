@@ -3,11 +3,13 @@
 cd `dirname $0`/../
 
 echo "Current working directory is ${PWD}"
-DIRECTORY="${PWD}/venv/"
+DIRECTORY="${PWD}/venv"
 
 if ! [[ -d "${DIRECTORY}" && ! -L "${DIRECTORY}" ]] ; then
     python3  -m venv "${DIRECTORY}"
 fi
+
+source ${DIRECTORY}/venv/bin/activate
 
 pip3 install pandas seaborn customtkinter scikit-learn numpy
 
