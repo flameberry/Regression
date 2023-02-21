@@ -186,7 +186,7 @@ class NNRTabView:
         N_TRAIN = len(self.__x_train)
         BATCH_SIZE = 500
         STEPS_PER_EPOCH = max(1, N_TRAIN // BATCH_SIZE)
-        max_epochs = 1000
+        MAX_EPOCHS = 1000
 
         lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(
             0.001,
@@ -227,7 +227,7 @@ class NNRTabView:
             self.__x_train,
             self.__y_train,
             verbose=1,
-            epochs=max_epochs,
+            epochs=MAX_EPOCHS,
             steps_per_epoch=STEPS_PER_EPOCH,
             validation_data=(self.__x_test, self.__y_test)
         )
