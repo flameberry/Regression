@@ -66,14 +66,8 @@ class PredictionApp(customtkinter.CTk):
 
         center(self)
 
-        self.__menu_bar = tkinter.Menu(self)
-        self.configure(menu=self.__menu_bar)
-
-        fileMenu = tkinter.Menu(self.__menu_bar)
-        self.__menu_bar.add_cascade(label="File", menu=fileMenu)
-
-        editMenu = tkinter.Menu(self.__menu_bar)
-        self.__menu_bar.add_cascade(label="Edit", menu=editMenu)
+        self.__menu_bar: tkinter.Menu
+        self.__create_menu_bar()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)
@@ -200,3 +194,18 @@ class PredictionApp(customtkinter.CTk):
         for tab_view in self.__tab_views:
             if current_tab == type(tab_view).get_tab_name():
                 tab_view.accuracy()
+
+    def __create_menu_bar(self):
+        self.__menu_bar = tkinter.Menu(self)
+        self.configure(menu=self.__menu_bar)
+
+        fileMenu = tkinter.Menu(self.__menu_bar)
+        self.__menu_bar.add_cascade(label="File", menu=fileMenu)
+
+        editMenu = tkinter.Menu(self.__menu_bar)
+        self.__menu_bar.add_cascade(label="Edit", menu=editMenu)
+
+        fileMenu.add_command(label="Item")
+        fileMenu.add_command(label="Exit")
+        editMenu.add_command(label="Undo")
+        editMenu.add_command(label="Redo")
