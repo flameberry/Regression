@@ -1,3 +1,4 @@
+import platform
 import pathlib
 import tkinter
 
@@ -67,7 +68,11 @@ class PredictionApp(customtkinter.CTk):
         center(self)
 
         self.__menu_bar: tkinter.Menu
-        self.__create_menu_bar()
+
+        if platform.system() == 'Darwin':
+            self.__create_menu_bar()
+            
+        self.__setup_shortcuts()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)
@@ -195,6 +200,13 @@ class PredictionApp(customtkinter.CTk):
         for tab_view in self.__tab_views:
             if current_tab == type(tab_view).get_tab_name():
                 tab_view.accuracy()
+    
+    def __setup_shortcuts(self):
+        self.bind_all("<Command-o>", func=self.__import_dataset)
+        self.bind_all("<Command-y>", func=self.__predict)
+        self.bind_all("<Command-a>", func=self.__accuracy)
+        self.bind_all("<Command-r>", func=self.__reload_dataset)
+
 
     def __create_menu_bar(self):
         """
@@ -212,7 +224,6 @@ class PredictionApp(customtkinter.CTk):
         self.__menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
         file_menu.add_command(label="Load Dataset", command=self.__import_dataset, accelerator="Command-O")
-        self.bind_all("<Command-o>", func=self.__import_dataset)
 
         edit_menu.add_command(label="Undo")
         edit_menu.add_command(label="Redo")
@@ -222,13 +233,5 @@ class PredictionApp(customtkinter.CTk):
         tools_menu.add_command(label="Predict", accelerator="Command-Y", command=self.__predict)
         tools_menu.add_command(label="Accuracy", accelerator="Command-A", command=self.__accuracy)
         tools_menu.add_command(label="Reload Dataset", accelerator="Command-R", command=self.__reload_dataset)
-
-        self.bind_all("<Command-y>", func=self.__predict)
-        self.bind_all("<Command-a>", func=self.__accuracy)
-        self.bind_all("<Command-r>", func=self.__reload_dataset)
-
-        # help_menu = tkinter.Menu(self.__menu_bar, name='help')
-        # self.__menu_bar.add_cascade(menu=help_menu, label='Help')
-        # self.createcommand('tk::mac::ShowHelp', )
 
         self.configure(menu=self.__menu_bar)
