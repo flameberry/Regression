@@ -6,7 +6,7 @@ echo "Current working directory is ${PWD}"
 DIRECTORY="${PWD}/venv/"
 
 if ! [[ -d "${DIRECTORY}" && ! -L "${DIRECTORY}" ]] ; then
-    python3  -m venv venv/
+    python3  -m venv "${DIRECTORY}"
 fi
 
 pip3 install pandas seaborn customtkinter scikit-learn numpy
