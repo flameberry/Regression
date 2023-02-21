@@ -1,6 +1,9 @@
 import datetime
 
 import customtkinter
+from tkinter import filedialog
+import pathlib
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import seaborn as sns
 
 import tensorflow as tf
+import keras
 from keras import Sequential
 from sklearn.preprocessing import StandardScaler
 from keras.layers import Dense, Dropout
@@ -157,7 +161,15 @@ class NNRTabView:
 
         if column_index != 0:
             self.row_index += 2
+        
+        self.__create_neural_network()
 
+        # Saving the model for later use
+        self.__regression_model.save(f'models/DNNR_Model_{datetime.datetime.now()}')
+
+        self.__plot()
+    
+    def __create_neural_network(self):
         # Training the neural network
         x = self.__dataset.drop(self.__predictable_column, axis=1).values
         y = self.__dataset[self.__predictable_column].values
@@ -220,11 +232,6 @@ class NNRTabView:
             validation_data=(self.__x_test, self.__y_test)
         )
 
-        # Saving the model for later use
-        self.__regression_model.save(f'models/DNNR_Model_{datetime.datetime.now()}')
-
-        self.__plot()
-
     def __plot(self):
         if not self.__dataset.empty:
             figure = plt.Figure(figsize=(6, 5))
@@ -252,6 +259,19 @@ class NNRTabView:
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()
             canvas.get_tk_widget().grid(row=self.row_index + 1, column=0, columnspan=3)
+    
+    def __load_model(self, path: str = None, open_dialog=True):
+        if open_dialog:
+            path = filedialog.askopenfilename(
+                title='Select dataset file',
+                initialdir=pathlib.Path(__file__).parent,
+                filetypes=(("CSV Files", "*.csv"), ("All Files", "*.*"))
+            )
+        if path == '':
+            return
+        
+        self.__regression_model = keras.models.load_model(path)
+        pass
 
     def predict(self):
         if not self.__dataset.empty:
