@@ -13,14 +13,25 @@ The above is achieved by introducing you to an user interface where you can impo
 
 <br>
 
-# Required Python Modules
+# Installation using scripts
 
+### <b> For Windows </b>
+Run the batch script `scripts/setup_venv.bat` using the command prompt or by double clicking the file icon in file explorer.
+
+
+### <b> For MacOS/Linux </b>
+Run the shell script `scripts/setup_venv.sh` using the terminal by giving it the execute permission using '`chmod +x scripts/setup_venv.sh`'.
+
+
+# Manual Installation
+Below given modules should be installed for the code to work:
 1. pandas
 2. numpy
 3. sklearn (scikit-learn)
 4. matplotlib
 5. seaborn
 6. customtkinter
+7. tensorflow (Only for Neural Network Regression)
 
 <br>
 
