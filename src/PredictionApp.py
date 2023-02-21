@@ -51,17 +51,17 @@ class PredictionApp(customtkinter.CTk):
         super().__init__()
 
         self.__dataset_path: str = ''
-        self.__dataset = pd.DataFrame()
+        self.__dataset: pd.DataFrame
         self.__predictable_col_string_var = None
 
         self.__loading_widget = None
         self.__loading_widget_label: customtkinter.CTkLabel
         self.__progress_bar: customtkinter.CTkProgressBar
 
-        self.__window_width = 950
-        self.__window_height = 800
+        self.__window_width = min(950, self.winfo_screenwidth())
+        self.__window_height = min(800, self.winfo_screenheight())
 
-        self.title("Profit Prediction")
+        self.title("Regression")
         self.geometry(f"{self.__window_width}x{self.__window_height}")
 
         center(self)
@@ -77,7 +77,7 @@ class PredictionApp(customtkinter.CTk):
         self.__sidebar_frame.grid_rowconfigure(5, weight=1)
 
         self.__import_button = customtkinter.CTkButton(self.__sidebar_frame, text='Import Dataset',
-                                                       command=self.import_dataset)
+                                                       command=self.__import_dataset)
         self.__import_button.grid(row=0, column=0, padx=20, pady=10)
 
         self.__predict_button = customtkinter.CTkButton(self.__sidebar_frame, text='Predict', state='disabled', command=self.__predict)
@@ -114,7 +114,7 @@ class PredictionApp(customtkinter.CTk):
 
         sns.set_theme()
 
-    def import_dataset(self):
+    def __import_dataset(self, *args):
         path = filedialog.askopenfilename(
             title='Select dataset file',
             initialdir=pathlib.Path(__file__).parent.parent,
@@ -128,12 +128,11 @@ class PredictionApp(customtkinter.CTk):
             file_name = path.split('/')[-1]
             self.__dataset_name_label.configure(text=file_name)
 
-            self.__create_loading_widget()
             self.__reload_dataset()
-            self.__loading_widget.destroy()
 
-    def __reload_dataset(self):
+    def __reload_dataset(self, *args):
         if len(self.__dataset_path):
+            self.__create_loading_widget()
             self.__dataset = pd.read_csv(self.__dataset_path)
             self.__dataset = self.__dataset.select_dtypes(include=np.number)
             self.__dataset.dropna(inplace=True)
@@ -158,6 +157,8 @@ class PredictionApp(customtkinter.CTk):
                 self.__progress_bar.step()
                 self.__loading_widget.update_idletasks()
                 tab_view.invalidate(self.__dataset, selected_col)
+            
+            self.__loading_widget.destroy()
         else:
             print('ERROR: Failed to reload dataset!')
 
@@ -183,29 +184,51 @@ class PredictionApp(customtkinter.CTk):
         for tab_view in self.__tab_views:
             tab_view.invalidate(self.__dataset, column)
 
-    def __predict(self):
+    def __predict(self, *args):
         current_tab = self.__main_tab_view.get()
         for tab_view in self.__tab_views:
             if current_tab == type(tab_view).get_tab_name():
                 tab_view.predict()
 
-    def __accuracy(self):
+    def __accuracy(self, *args):
         current_tab = self.__main_tab_view.get()
         for tab_view in self.__tab_views:
             if current_tab == type(tab_view).get_tab_name():
                 tab_view.accuracy()
 
     def __create_menu_bar(self):
+        """
+        Only for macOS
+        """
         self.__menu_bar = tkinter.Menu(self)
+
+        self.createcommand("tk::mac::Quit", self.destroy)
+        self.createcommand("tk::mac::ShowPreferences", lambda: print("Preferences"))
+
+        file_menu = tkinter.Menu(self.__menu_bar, tearoff=0)
+        self.__menu_bar.add_cascade(label="File", menu=file_menu)
+
+        edit_menu = tkinter.Menu(self.__menu_bar, tearoff=0)
+        self.__menu_bar.add_cascade(label="Edit", menu=edit_menu)
+
+        file_menu.add_command(label="Load Dataset", command=self.__import_dataset, accelerator="Command-O")
+        self.bind_all("<Command-o>", func=self.__import_dataset)
+
+        edit_menu.add_command(label="Undo")
+        edit_menu.add_command(label="Redo")
+
+        tools_menu = tkinter.Menu(self.__menu_bar, tearoff=0)
+        self.__menu_bar.add_cascade(label="Tools", menu=tools_menu)
+        tools_menu.add_command(label="Predict", accelerator="Command-Y", command=self.__predict)
+        tools_menu.add_command(label="Accuracy", accelerator="Command-A", command=self.__accuracy)
+        tools_menu.add_command(label="Reload Dataset", accelerator="Command-R", command=self.__reload_dataset)
+
+        self.bind_all("<Command-y>", func=self.__predict)
+        self.bind_all("<Command-a>", func=self.__accuracy)
+        self.bind_all("<Command-r>", func=self.__reload_dataset)
+
+        # help_menu = tkinter.Menu(self.__menu_bar, name='help')
+        # self.__menu_bar.add_cascade(menu=help_menu, label='Help')
+        # self.createcommand('tk::mac::ShowHelp', )
+
         self.configure(menu=self.__menu_bar)
-
-        fileMenu = tkinter.Menu(self.__menu_bar)
-        self.__menu_bar.add_cascade(label="File", menu=fileMenu)
-
-        editMenu = tkinter.Menu(self.__menu_bar)
-        self.__menu_bar.add_cascade(label="Edit", menu=editMenu)
-
-        fileMenu.add_command(label="Item")
-        fileMenu.add_command(label="Exit")
-        editMenu.add_command(label="Undo")
-        editMenu.add_command(label="Redo")
