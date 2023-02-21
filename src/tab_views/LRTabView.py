@@ -21,7 +21,7 @@ class LRTabView:
         return LRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
-        self.__dataset = pd.DataFrame()
+        self.__dataset: pd.DataFrame
         self.__regression_model = LinearRegression()
         self.__x_train: np.array = None
         self.__x_test: np.array = None

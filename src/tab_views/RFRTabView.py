@@ -22,7 +22,7 @@ class RFRTabView:
         return RFRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
-        self.__dataset = pd.DataFrame()
+        self.__dataset: pd.DataFrame
         self.__regression_model = RandomForestRegressor(n_estimators=100, random_state=1)
         self.__x_train: np.array = None
         self.__x_test: np.array = None

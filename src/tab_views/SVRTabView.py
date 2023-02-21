@@ -22,7 +22,7 @@ class SVRTabView:
         return SVRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
-        self.__dataset = pd.DataFrame()
+        self.__dataset: pd.DataFrame
         self.__regression_model = SVR(kernel='rbf')
         self.__x_train: np.array = None
         self.__x_test: np.array = None

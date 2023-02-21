@@ -16,7 +16,7 @@ class DatasetTabView:
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__tab_view = tab_view
-        self.__dataset = pd.DataFrame()
+        self.__dataset: pd.DataFrame
 
         self.__tab_view.rowconfigure(0, weight=1)
         self.__tab_view.columnconfigure(0, weight=1)
