@@ -1,8 +1,10 @@
+import tkinter
+
 import customtkinter
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -31,6 +33,7 @@ class LRTabView:
         self.__independent_col_just_predicted = ''
 
         self.__tab_view = tab_view
+        self.__tab_view.grid_columnconfigure((0, 1, 2), weight=1)
 
         # Declaring widgets
         self.__predicted_value_label: customtkinter.CTkLabel
@@ -48,8 +51,6 @@ class LRTabView:
         self.__plot_graph_checkbox = customtkinter.CTkCheckBox(self.__tab_view)
 
     def __create_layout(self):
-        # self.__tab_view.columnconfigure((0, 1, 2), weight=1)
-
         attribute_list = list(self.__dataset.columns.values)
         self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
         self.__independent_feature_option_menu.set(attribute_list[0])
@@ -63,7 +64,8 @@ class LRTabView:
 
     def __plot(self):
         if not self.__dataset.empty:
-            figure = plt.Figure(figsize=(6, 5))
+            self.__tab_view.grid_rowconfigure(2, weight=1)
+            figure = plt.Figure()
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
 
@@ -82,7 +84,7 @@ class LRTabView:
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()
-            canvas.get_tk_widget().grid(row=2, column=0, columnspan=3)
+            canvas.get_tk_widget().grid(row=2, column=0, columnspan=3, sticky='NSEW')
 
     def set_predictable_column(self, column: str):
         self.__predictable_column = column

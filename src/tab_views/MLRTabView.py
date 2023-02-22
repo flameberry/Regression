@@ -30,6 +30,7 @@ class MLRTabView:
         self.__predictable_column = ''
 
         self.__tab_view = tab_view
+        self.__tab_view.grid_columnconfigure((0, 1, 2), weight=1)
 
         # Declaring widgets
         self.__predicted_value_label: customtkinter.CTkLabel
@@ -59,7 +60,7 @@ class MLRTabView:
         column_index = 0
 
         for label, entry in zip(self.__feature_entry_labels,  self.__feature_entries):
-            label.grid(row=self.row_index, column=column_index, padx=10, pady=(0, 10))
+            label.grid(row=self.row_index, column=column_index, padx=10, pady=(0, 0))
             entry.grid(row=self.row_index + 1, column=column_index, padx=10, pady=(0, 10))
             column_index += 1
             if column_index == 3:
@@ -79,7 +80,10 @@ class MLRTabView:
 
     def __plot(self):
         if not self.__dataset.empty:
-            figure = plt.Figure(figsize=(6, 5))
+            self.__tab_view.grid_rowconfigure(self.row_index + 1, weight=1)
+
+            # figure = plt.Figure(figsize=(6, 5))
+            figure = plt.Figure()
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
 
@@ -92,7 +96,7 @@ class MLRTabView:
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()
-            canvas.get_tk_widget().grid(row=self.row_index + 1, column=0, columnspan=3)
+            canvas.get_tk_widget().grid(row=self.row_index + 1, column=0, columnspan=3, sticky='NSEW')
 
     def predict(self):
         if not self.__dataset.empty:

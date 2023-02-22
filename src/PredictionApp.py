@@ -1,13 +1,15 @@
 import platform
 import pathlib
-import tkinter
 
+import tkinter
 import customtkinter
 from tkinter import filedialog
 
 import pandas as pd
 import seaborn as sns
 import numpy as np
+
+from PIL import Image
 
 from tab_views.DatasetTabView import DatasetTabView
 from tab_views.LRTabView import LRTabView
@@ -97,6 +99,16 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame, values=[])
         self.__predictable_column_option_menu.set('N/A')
         self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
+
+        self.__play_button = customtkinter.CTkButton(self.__sidebar_frame,
+                                                     image=customtkinter.CTkImage(
+                                                         Image.open('/Users/flameberry/Developer/Regression/icons/play_button_icon.png'),
+                                                         size=(26, 26)
+                                                     ),
+                                                     text='',
+                                                     width=20,
+                                                     command=lambda: print("Wow"))
+        # self.__play_button.grid(row=5, column=0)
 
         self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', state='disabled', command=self.__reload_dataset)
         self.__reload_button.grid(row=6, column=0, padx=20, pady=10)
