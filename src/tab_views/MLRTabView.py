@@ -82,7 +82,6 @@ class MLRTabView:
         if not self.__dataset.empty:
             self.__tab_view.grid_rowconfigure(self.row_index + 1, weight=1)
 
-            # figure = plt.Figure(figsize=(6, 5))
             figure = plt.Figure()
             figure.set_layout_engine("constrained")
             ax = figure.subplots()

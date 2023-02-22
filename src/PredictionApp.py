@@ -18,7 +18,7 @@ from tab_views.LRTabView import LRTabView
 from tab_views.MLRTabView import MLRTabView
 from tab_views.SVRTabView import SVRTabView
 from tab_views.RFRTabView import RFRTabView
-# from tab_views.NNRTabView import NNRTabView
+from tab_views.NNRTabView import NNRTabView
 
 def center(win, parent=None):
     """
@@ -122,8 +122,8 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
-        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
-        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
+        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
+        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
         self.__tab_views = []
 
         for tab_view_type in self.__tab_view_types:
@@ -171,12 +171,19 @@ class PredictionApp(customtkinter.CTk):
 
             selected_col = self.__predictable_col_string_var.get()
 
+            tab_view_count = len(self.__tab_views)
+            finished_count = 0
             for tab_view in self.__tab_views:
                 self.__loading_widget_label.configure(text=f'Creating {type(tab_view).__name__}....')
-                self.__progress_bar.step()
+                self.__progress_bar.set(value=finished_count / tab_view_count)
                 self.__loading_widget.update_idletasks()
                 tab_view.invalidate(self.__dataset, selected_col)
-            
+                finished_count += 1
+
+            self.__loading_widget_label.configure(text='Done.')
+            self.__progress_bar.set(value=1)
+            self.__loading_widget.update_idletasks()
+
             self.__loading_widget.destroy()
         else:
             print('ERROR: Failed to reload dataset!')
@@ -193,9 +200,8 @@ class PredictionApp(customtkinter.CTk):
         self.__loading_widget_label = customtkinter.CTkLabel(self.__loading_widget, text='Loading dataset...', font=customtkinter.CTkFont(size=15, weight="bold"))
         self.__loading_widget_label.pack(pady=10)
 
-        self.__progress_bar = customtkinter.CTkProgressBar(self.__loading_widget, mode='indeterminate', width=300)
+        self.__progress_bar = customtkinter.CTkProgressBar(self.__loading_widget, mode='determinate', width=300)
         self.__progress_bar.pack()
-        self.__progress_bar.start()
 
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()
