@@ -5,6 +5,8 @@ import tkinter
 import customtkinter
 from tkinter import filedialog
 
+import matplotlib.pyplot as plt
+
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -128,8 +130,8 @@ class PredictionApp(customtkinter.CTk):
             tab_name = tab_view_type.get_tab_name()
             self.__main_tab_view.add(tab_name)
             self.__tab_views.append(tab_view_type(self.__main_tab_view.tab(tab_name)))
-
-        sns.set_theme()
+        
+        plt.style.use("seaborn-dark")
 
     def __import_dataset(self, *args):
         path = filedialog.askopenfilename(
