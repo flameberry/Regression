@@ -1,24 +1,18 @@
 import platform
 import pathlib
-
 import tkinter
 import customtkinter
 from tkinter import filedialog
-
 import matplotlib.pyplot as plt
-
 import pandas as pd
-import seaborn as sns
 import numpy as np
-
-from PIL import Image
-
 from tab_views.DatasetTabView import DatasetTabView
 from tab_views.LRTabView import LRTabView
 from tab_views.MLRTabView import MLRTabView
 from tab_views.SVRTabView import SVRTabView
 from tab_views.RFRTabView import RFRTabView
 from tab_views.NNRTabView import NNRTabView
+
 
 def center(win, parent=None):
     """
@@ -52,7 +46,12 @@ class PredictionApp(customtkinter.CTk):
     This class contains the complete user interface of the app
     to compare multiple regression methods
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
+        """
+        creates the main app layout for regression
+        param - methods: a tuple of `Regression` enum values,
+        to specify the methods to be shown in the user interface
+        """
         super().__init__()
 
         self.__dataset_path: str = ''
@@ -102,14 +101,14 @@ class PredictionApp(customtkinter.CTk):
         self.__predictable_column_option_menu.set('N/A')
         self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
 
-        self.__play_button = customtkinter.CTkButton(self.__sidebar_frame,
-                                                     image=customtkinter.CTkImage(
-                                                         Image.open('/Users/flameberry/Developer/Regression/icons/play_button_icon.png'),
-                                                         size=(26, 26)
-                                                     ),
-                                                     text='',
-                                                     width=20,
-                                                     command=lambda: print("Wow"))
+        # self.__play_button = customtkinter.CTkButton(self.__sidebar_frame,
+        #                                              image=customtkinter.CTkImage(
+        #                                                  Image.open('/Users/flameberry/Developer/Regression/icons/play_button_icon.png'),
+        #                                                  size=(26, 26)
+        #                                              ),
+        #                                              text='',
+        #                                              width=20,
+        #                                              command=lambda: print("Wow"))
         # self.__play_button.grid(row=5, column=0)
 
         self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', state='disabled', command=self.__reload_dataset)
@@ -122,10 +121,15 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
         self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
-        self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
-        # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
-        self.__tab_views = []
+        if 'methods' in kwargs:
+            assert type(kwargs['methods']) == tuple, "`methods` parameter should be a tuple!"
+            assert len(kwargs['methods']) != 0, "`methods` should not be an empty tuple!"
+            self.__tab_view_types = [DatasetTabView] + [method.tab_type() for method in kwargs['methods']]
+        else:
+            # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
+            self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
 
+        self.__tab_views = []
         for tab_view_type in self.__tab_view_types:
             tab_name = tab_view_type.get_tab_name()
             self.__main_tab_view.add(tab_name)
@@ -226,7 +230,6 @@ class PredictionApp(customtkinter.CTk):
         self.bind_all("<Command-y>", func=self.__predict)
         self.bind_all("<Command-a>", func=self.__accuracy)
         self.bind_all("<Command-r>", func=self.__reload_dataset)
-
 
     def __create_menu_bar(self):
         """

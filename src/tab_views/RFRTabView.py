@@ -105,8 +105,17 @@ class RFRTabView:
             attribute_list: list[str] = list(self.__dataset.columns.values)
             attribute_list.remove(self.__predictable_column)
 
-            model_ranks = pd.Series(self.__regression_model.feature_importances_, index=attribute_list, name='Importance').sort_values(ascending=True, inplace=False)
-            model_ranks.plot(ax=ax, kind='barh')
+            # model_ranks = pd.Series(self.__regression_model.feature_importances_, index=attribute_list, name='Importance').sort_values(ascending=True, inplace=False)
+            # model_ranks.plot(ax=ax, kind='barh')
+
+            # Create a DataFrame using a Dictionary
+            data = {'feature_names': attribute_list, 'feature_importance': self.__regression_model.feature_importances_}
+            fi_df = pd.DataFrame(data)
+
+            # Sort the DataFrame in order decreasing feature importance
+            fi_df.sort_values(by=['feature_importance'], ascending=False, inplace=True)
+
+            sns.barplot(x=fi_df['feature_importance'], y=fi_df['feature_names'], ax=ax)
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()
