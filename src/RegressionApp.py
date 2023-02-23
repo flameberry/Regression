@@ -41,7 +41,7 @@ def center(win, parent=None):
     win.deiconify()
 
 
-class PredictionApp(customtkinter.CTk):
+class RegressionApp(customtkinter.CTk):
     """
     This class contains the complete user interface of the app
     to compare multiple regression methods
