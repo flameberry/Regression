@@ -3,6 +3,7 @@ import datetime
 import customtkinter
 from tkinter import filedialog
 import pathlib
+from utils import project_dir
 
 import numpy as np
 import pandas as pd
@@ -96,6 +97,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 #
 # x_test['prediction'] = model.predict(x_test_scaled)
 
+
 class NNRTabView:
     """
     This class contains a Deep Neural Network Regressor from tensorflow
@@ -139,7 +141,7 @@ class NNRTabView:
 
     def __create_layout(self):
         # display layout based on the imported dataset
-        attribute_list: list[str] = list(self.__dataset.columns.values)
+        attribute_list = list(self.__dataset.columns.values)
         attribute_list.remove(self.__predictable_column)
 
         for column in attribute_list:
@@ -166,7 +168,8 @@ class NNRTabView:
         self.__create_neural_network()
 
         # Saving the model for later use
-        self.__regression_model.save(f'models/DNNR_Model_{datetime.datetime.now()}')
+        save_path = str(project_dir) + f'/models/DNNR_Model_{datetime.datetime.now()}'
+        self.__regression_model.save(save_path)
 
         self.__plot()
     
