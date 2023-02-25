@@ -166,11 +166,6 @@ class NNRTabView:
             self.row_index += 2
         
         self.__create_neural_network()
-
-        # Saving the model for later use
-        save_path = str(project_dir) + f'/models/DNNR_Model_{datetime.datetime.now()}'
-        self.__regression_model.save(save_path)
-
         self.__plot()
     
     def __create_neural_network(self):
@@ -276,17 +271,16 @@ class NNRTabView:
             return
         
         self.__regression_model = keras.models.load_model(path)
-        pass
 
     def predict(self):
-        if not self.__dataset.empty:
-            feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
-            # self.__standard_scaler.transform(feature_list)
-            predicted_value = self.__regression_model.predict(feature_list)
-            self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {predicted_value[0]}',
-                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
-            self.__predicted_value_label.grid(row=self.row_index, column=0,
-                                              columnspan=3, padx=10, pady=(0, 10), sticky='WE')
+        assert not self.__dataset.empty
+        feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
+        # self.__standard_scaler.transform(feature_list)
+        predicted_value = self.__regression_model.predict(feature_list)
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {predicted_value[0]}',
+                                               font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.__predicted_value_label.grid(row=self.row_index, column=0,
+                                          columnspan=3, padx=10, pady=(0, 10), sticky='WE')
 
     def accuracy(self):
         prediction_test = self.__regression_model.predict(self.__x_test)
@@ -294,6 +288,10 @@ class NNRTabView:
         r2score = r2_score(self.__y_test, prediction_test)
         mse = np.mean(prediction_test - self.__y_test) ** 2
         print(f"Neural Network Regression: R2 Score: {r2score * 100}%, RMSE: {np.sqrt(mse)}, MSE: {mse}")
+
+    def save(self, dataset_name):
+        save_path = str(project_dir) + f'/models/{dataset_name}_NNR_Model_{datetime.datetime.now()}'
+        self.__regression_model.save(save_path)
 
     def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
         self.__dataset = dataset

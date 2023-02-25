@@ -37,8 +37,8 @@ class RegressionApp(customtkinter.CTk):
         self.__loading_widget_label: customtkinter.CTkLabel
         self.__progress_bar: customtkinter.CTkProgressBar
 
-        self.__window_width = min(950, self.winfo_screenwidth())
-        self.__window_height = min(800, self.winfo_screenheight())
+        self.__window_width = min(850, self.winfo_screenwidth())
+        self.__window_height = min(650, self.winfo_screenheight())
 
         self.title("Regression")
         self.geometry(f"{self.__window_width}x{self.__window_height}")
@@ -101,8 +101,8 @@ class RegressionApp(customtkinter.CTk):
             assert len(kwargs['methods']) != 0, "`methods` should not be an empty tuple!"
             self.__tab_view_types = [DatasetTabView] + [method.tab_type() for method in kwargs['methods']]
         else:
-            self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
-            # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
+            # self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView, NNRTabView]
+            self.__tab_view_types = [DatasetTabView, LRTabView, MLRTabView, SVRTabView, RFRTabView]
 
         self.__tab_views = []
         for tab_view_type in self.__tab_view_types:
@@ -200,11 +200,22 @@ class RegressionApp(customtkinter.CTk):
             if current_tab == type(tab_view).get_tab_name():
                 tab_view.accuracy()
     
+    def __save(self, *args):
+        current_tab = self.__main_tab_view.get()
+        if current_tab == NNRTabView.get_tab_name():
+            for tab_view in self.__tab_views:
+                if current_tab == type(tab_view).get_tab_name():
+                    file_name = str(self.__dataset_path.split('/')[-1]).split('.')[0]
+                    tab_view.save(file_name)
+
     def __setup_shortcuts(self):
-        self.bind_all("<Command-o>", func=self.__import_dataset)
-        self.bind_all("<Command-y>", func=self.__predict)
-        self.bind_all("<Command-a>", func=self.__accuracy)
-        self.bind_all("<Command-r>", func=self.__reload_dataset)
+        super_key = 'Command' if platform.system() == 'Darwin' else 'Control'
+
+        self.bind_all(f"<{super_key}-o>", func=self.__import_dataset)
+        self.bind_all(f"<{super_key}-y>", func=self.__predict)
+        self.bind_all(f"<{super_key}-a>", func=self.__accuracy)
+        self.bind_all(f"<{super_key}-r>", func=self.__reload_dataset)
+        self.bind_all(f"<{super_key}-s>", func=self.__save)
 
     def __create_menu_bar(self):
         """
