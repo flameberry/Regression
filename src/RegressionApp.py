@@ -37,8 +37,8 @@ class RegressionApp(customtkinter.CTk):
         self.__loading_widget_label: customtkinter.CTkLabel
         self.__progress_bar: customtkinter.CTkProgressBar
 
-        self.__window_width = min(850, self.winfo_screenwidth())
-        self.__window_height = min(650, self.winfo_screenheight())
+        self.__window_width = min(900, self.winfo_screenwidth())
+        self.__window_height = min(700, self.winfo_screenheight())
 
         self.title("Regression")
         self.geometry(f"{self.__window_width}x{self.__window_height}")
