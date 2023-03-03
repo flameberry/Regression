@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # methods = tuple([method for method, var in zip(Regression, widget.get_choices()) if var is True])
     methods = tuple([method for method in Regression if method != Regression.NeuralNetwork])
 
-    print('Selected regression methods:', methods)
+    print('Selected Methods:', tuple([method.to_string() for method in methods]))
 
     app = RegressionApp(methods=methods)  # Possible Parameter: methods=(Regression.NeuralNetwork, Regression.MultipleLinear)
     app.mainloop()

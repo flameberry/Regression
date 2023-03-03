@@ -2,6 +2,7 @@ import platform
 import pathlib
 import tkinter
 import customtkinter
+from PIL import Image
 from tkinter import filedialog
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -13,7 +14,7 @@ from tab_views.SVRTabView import SVRTabView
 from tab_views.RFRTabView import RFRTabView
 from tab_views.NNRTabView import NNRTabView
 
-from utils import center
+from utils import center, project_dir
 
 
 class RegressionApp(customtkinter.CTk):
@@ -40,7 +41,12 @@ class RegressionApp(customtkinter.CTk):
         self.__window_width = min(900, self.winfo_screenwidth())
         self.__window_height = min(700, self.winfo_screenheight())
 
-        self.title("Regression")
+        self.__title = 'Regression'
+
+        self.__frame_corner_radius = 5
+        self.__frame_padding = 10
+
+        self.title(self.__title)
         self.geometry(f"{self.__window_width}x{self.__window_height}")
 
         center(self)
@@ -52,49 +58,22 @@ class RegressionApp(customtkinter.CTk):
             
         self.__setup_shortcuts()
 
+        self.grid_rowconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
-        self.__sidebar_frame = customtkinter.CTkFrame(self, width=100, corner_radius=10)
-        self.__sidebar_frame.grid(row=0, column=0, rowspan=4, padx=(10, 0), pady=(10, 10), sticky="nsew")
+        self.__create_toolbar_layout()
+
+        self.__sidebar_frame = customtkinter.CTkFrame(self, width=100, corner_radius=self.__frame_corner_radius)
+        self.__sidebar_frame.grid(row=0, column=0, rowspan=2, padx=(self.__frame_padding, 0), pady=self.__frame_padding, sticky="nsew")
         self.__sidebar_frame.grid_rowconfigure(5, weight=1)
-
-        self.__import_button = customtkinter.CTkButton(self.__sidebar_frame, text='Import Dataset',
-                                                       command=self.__import_dataset)
-        self.__import_button.grid(row=0, column=0, padx=20, pady=10)
-
-        self.__predict_button = customtkinter.CTkButton(self.__sidebar_frame, text='Predict', state='disabled', command=self.__predict)
-        self.__predict_button.grid(row=1, column=0, padx=20, pady=10)
-
-        self.__accuracy_button = customtkinter.CTkButton(self.__sidebar_frame, text='Accuracy', state='disabled', command=self.__accuracy)
-        self.__accuracy_button.grid(row=2, column=0, padx=20, pady=10)
-
-        self.__predictable_col_label = customtkinter.CTkLabel(self.__sidebar_frame, text='To Predict:')
-        self.__predictable_col_label.grid(row=3, column=0, padx=20)
-
-        self.__predictable_column_option_menu = customtkinter.CTkOptionMenu(self.__sidebar_frame, values=[])
-        self.__predictable_column_option_menu.set('N/A')
-        self.__predictable_column_option_menu.grid(row=4, column=0, padx=20, pady=10)
-
-        # self.__play_button = customtkinter.CTkButton(self.__sidebar_frame,
-        #                                              image=customtkinter.CTkImage(
-        #                                                  Image.open('/Users/flameberry/Developer/Regression/icons/play_button_icon.png'),
-        #                                                  size=(26, 26)
-        #                                              ),
-        #                                              text='',
-        #                                              width=20,
-        #                                              command=lambda: print("Wow"))
-        # self.__play_button.grid(row=5, column=0)
-
-        self.__reload_button = customtkinter.CTkButton(self.__sidebar_frame, text='Reload Dataset', state='disabled', command=self.__reload_dataset)
-        self.__reload_button.grid(row=6, column=0, padx=20, pady=10)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=150,
                                                            font=customtkinter.CTkFont(weight='bold'))
         self.__dataset_name_label.grid(row=7, column=0, padx=20, pady=10)
 
-        self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
-        self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(0, 10), sticky="nsew")
+        self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=self.__frame_corner_radius)
+        self.__main_tab_view.grid(row=1, column=1, padx=self.__frame_padding, pady=(0, self.__frame_padding), sticky="nsew")
 
         if 'methods' in kwargs:
             assert type(kwargs['methods']) == tuple, "`methods` parameter should be a tuple!"
@@ -116,7 +95,7 @@ class RegressionApp(customtkinter.CTk):
         path = filedialog.askopenfilename(
             title='Select dataset file',
             initialdir=pathlib.Path(__file__).parent.parent,
-            filetypes=(("CSV Files", "*.csv"), ("All Files", "*.*"))
+            filetypes=(("CSV", "*.csv"), ("XLS Files", "*.xls"), ("XLSX Files", "*.xlsx"), ("All Files", "*.*"))
         )
         if path == '':
             return
@@ -128,24 +107,30 @@ class RegressionApp(customtkinter.CTk):
 
             self.__reload_dataset()
 
+            # Update window title to show currently loaded dataset
+            self.__title = f'Regression - {file_name}'
+            self.title(self.__title)
+
     def __reload_dataset(self, *args):
         if len(self.__dataset_path):
             self.__create_loading_widget()
-            self.__dataset = pd.read_csv(self.__dataset_path)
+            extension = self.__dataset_path.split('.')[-1]
+            if extension == 'csv':
+                self.__dataset = pd.read_csv(self.__dataset_path)
+            # elif extension == 'xlsx' or extension == 'xls':  # TODO: Fixme
+            #     self.__dataset = pd.read_excel(self.__dataset_path)
             self.__dataset = self.__dataset.select_dtypes(include=np.number)
             self.__dataset.dropna(inplace=True)
 
             attribute_list = list(self.__dataset.columns.values)
 
-            self.__predict_button.configure(state='normal')
-            self.__accuracy_button.configure(state='normal')
-            self.__reload_button.configure(state='normal')
-
             self.__predictable_col_string_var = tkinter.StringVar()
             self.__predictable_col_string_var.set(attribute_list[-1])
 
-            self.__predictable_column_option_menu.configure(values=attribute_list,
-                                                            variable=self.__predictable_col_string_var)
+            # Toolbar
+            self.__predictable_column_option_menu_toolbar.configure(values=attribute_list,
+                                                                    variable=self.__predictable_col_string_var)
+
             self.__predictable_col_string_var.trace("w", self.__predictable_column_callback)
 
             selected_col = self.__predictable_col_string_var.get()
@@ -244,3 +229,78 @@ class RegressionApp(customtkinter.CTk):
         tools_menu.add_command(label="Reload Dataset", accelerator="Command-R", command=self.__reload_dataset)
 
         self.configure(menu=self.__menu_bar)
+
+    def __create_toolbar_layout(self):
+        self.__tool_bar_frame = customtkinter.CTkFrame(self, corner_radius=self.__frame_corner_radius)
+        self.__tool_bar_frame.grid(row=0, column=1, padx=self.__frame_padding, pady=(self.__frame_padding, 0), sticky='NSEW')
+
+        self.__tool_bar_frame.grid_rowconfigure(0, weight=1)
+        self.__tool_bar_frame.grid_columnconfigure(2, weight=1)
+
+        import_button_image = customtkinter.CTkImage(
+            Image.open(str(project_dir) + '/icons/add_file_icon_24x24.png'),
+            size=(24, 24)
+        )
+
+        self.__import_button_tool_bar = customtkinter.CTkButton(
+            self.__tool_bar_frame,
+            image=import_button_image,
+            text='',
+            command=self.__import_dataset,
+            width=24,
+            height=24,
+            corner_radius=5
+        )
+        self.__import_button_tool_bar.grid(row=0, column=0, sticky='NS')
+
+        reload_button_icon_image = customtkinter.CTkImage(
+            Image.open(str(project_dir) + '/icons/reload_icon_24x24.png'),
+            size=(24, 24)
+        )
+
+        self.__reload_button_toolbar = customtkinter.CTkButton(
+            self.__tool_bar_frame,
+            image=reload_button_icon_image,
+            text='',
+            command=self.__reload_dataset,
+            width=24,
+            height=24,
+            corner_radius=5
+        )
+        self.__reload_button_toolbar.grid(row=0, column=1, padx=(5, 0), sticky='NS')
+
+        self.__predictable_column_option_menu_toolbar = customtkinter.CTkOptionMenu(self.__tool_bar_frame, values=[])
+        self.__predictable_column_option_menu_toolbar.set('N/A')
+        self.__predictable_column_option_menu_toolbar.grid(row=0, column=2)
+
+        play_button_image = customtkinter.CTkImage(
+            Image.open(str(project_dir) + '/icons/play_button_icon.png'),
+            size=(24, 24)
+        )
+
+        self.__play_button = customtkinter.CTkButton(
+            self.__tool_bar_frame,
+            image=play_button_image,
+            text='',
+            command=self.__predict,
+            width=24,
+            height=24,
+            corner_radius=5
+        )
+        self.__play_button.grid(row=0, column=3, sticky='NS')
+
+        percentage_icon_image = customtkinter.CTkImage(
+            Image.open(str(project_dir) + '/icons/percentage_icon_24x24.png'),
+            size=(24, 24)
+        )
+
+        self.__accuracy_button_toolbar = customtkinter.CTkButton(
+            self.__tool_bar_frame,
+            image=percentage_icon_image,
+            text='',
+            command=self.__accuracy,
+            width=24,
+            height=24,
+            corner_radius=5
+        )
+        self.__accuracy_button_toolbar.grid(row=0, column=4, padx=(5, 0), sticky='NS')
