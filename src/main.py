@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # widget = MethodSelectionWidget()
     # widget.mainloop()
     # methods = tuple([method for method, var in zip(Regression, widget.get_choices()) if var is True])
-    methods = []
+    methods = tuple([method for method in Regression if method != Regression.NeuralNetwork])
 
     print('Selected regression methods:', methods)
 

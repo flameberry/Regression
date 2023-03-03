@@ -94,7 +94,7 @@ class RegressionApp(customtkinter.CTk):
         self.__dataset_name_label.grid(row=7, column=0, padx=20, pady=10)
 
         self.__main_tab_view = customtkinter.CTkTabview(self, corner_radius=10)
-        self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(10, 10), sticky="nsew")
+        self.__main_tab_view.grid(row=0, column=1, rowspan=8, columnspan=3, padx=(10, 10), pady=(0, 10), sticky="nsew")
 
         if 'methods' in kwargs:
             assert type(kwargs['methods']) == tuple, "`methods` parameter should be a tuple!"
