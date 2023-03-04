@@ -8,10 +8,10 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 
-from src.tab_views.DatasetTabView import DatasetTabView
-from src.tab_views.LRTabView import LRTabView
-from src.tab_views.MLRTabView import MLRTabView
-from src.tab_views.SVRTabView import SVRTabView
+from tab_views.DatasetTabView import DatasetTabView
+from tab_views.LRTabView import LRTabView
+from tab_views.MLRTabView import MLRTabView
+from tab_views.SVRTabView import SVRTabView
 
 
 class PredictionApp(customtkinter.CTk):
