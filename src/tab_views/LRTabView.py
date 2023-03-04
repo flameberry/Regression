@@ -35,6 +35,9 @@ class LRTabView:
         self.__tab_view = tab_view
         self.__tab_view.grid_columnconfigure((0, 1, 2), weight=1)
 
+        self.__predicted_value = None
+        self.__evaluation_metrics = {}
+
         # Declaring widgets
         self.__predicted_value_label: customtkinter.CTkLabel
         self.__independent_feature_option_menu: customtkinter.CTkOptionMenu
@@ -49,6 +52,9 @@ class LRTabView:
         self.__independent_feature_option_menu = customtkinter.CTkOptionMenu(self.__tab_view)
         self.__feature_entry = customtkinter.CTkEntry(self.__tab_view)
         self.__plot_graph_checkbox = customtkinter.CTkCheckBox(self.__tab_view)
+
+        self.__predicted_value = None
+        self.__evaluation_metrics = {}
 
     def __create_layout(self):
         attribute_list = list(self.__dataset.columns.values)
@@ -90,7 +96,10 @@ class LRTabView:
         self.__predictable_column = column
         print(f'LR: Set predictable column as: {column}')
 
-    def predict(self):
+    def train_model(self) -> dict:
+        pass
+
+    def predict(self) -> float:
         # Training the model
         selected_column = self.__independent_feature_option_menu.get()
         self.__independent_col_just_predicted = selected_column
@@ -100,13 +109,17 @@ class LRTabView:
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
                                                                                         random_state=42)
         self.__regression_model.fit(self.__x_train.reshape(-1, 1), self.__y_train.reshape(-1, 1))
-        predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column} is {predicted_value[0][0]}',
+        self.__predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0]
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
 
         if bool(self.__plot_graph_checkbox.get()):
             self.__plot()
+        return self.__predicted_value
+
+    def get_evaluation_metrics(self) -> dict:
+        return self.__evaluation_metrics
 
     def accuracy(self):
         assert len(self.__independent_col_just_predicted) != 0
