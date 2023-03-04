@@ -116,7 +116,6 @@ class RegressionApp(customtkinter.CTk):
             file_name = path.split('/')[-1]
             self.__dataset_name_label.configure(text=file_name)
 
-            self.__create_dataset_settings_widget()
             self.__reload_dataset()
 
             # Update window title to show currently loaded dataset
@@ -263,10 +262,6 @@ class RegressionApp(customtkinter.CTk):
         tools_menu.add_command(label="Reload Dataset", accelerator="Command-R", command=self.__reload_dataset)
 
         self.configure(menu=self.__menu_bar)
-
-    def __create_dataset_settings_widget(self):
-        widget = DatasetSettingsWidget(self)
-        widget.mainloop()
 
     def __create_toolbar_layout(self):
         self.__tool_bar_frame = customtkinter.CTkFrame(self, corner_radius=self.__frame_corner_radius)
