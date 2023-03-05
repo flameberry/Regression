@@ -80,29 +80,29 @@ def generate_random_dataset(size=10000):
     profit_dummy += noise_profit
     profit_dummy = abs(profit_dummy)
 
+    scale = 100.0
+
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
-    noise_admin = 0.9 * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
+    noise_admin = scale * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
     admin_dummy = abs(admin_dummy)
 
     rdspend_dummy = np.array(power_law_reverse(profit_dummy + 0 * 10 ** 5, 7500, 0.375))
-    noise_rdspend = 0.9 * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
+    noise_rdspend = scale * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
     rdspend_dummy = abs(rdspend_dummy)
 
     sales_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
-    noise_sales = 0.9 * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
+    noise_sales = scale * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
     sales_dummy += noise_sales
     sales_dummy = abs(sales_dummy)
 
     # operations_dummy = np.array(ellipse_reverse(profit_dummy, 10 * 10 ** 5, 6 * 10 ** 5))
     # operations_dummy = np.array(rect_hyperbola_inverse(profit_dummy, 10 ** 6))
     operations_dummy = np.array(half_life_inverse(profit_dummy, 10 ** 11.7, 10 ** 6, -10 ** 5))
-    noise_operations = 0.8 * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
+    noise_operations = scale * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
     operations_dummy += noise_operations - 7 * 10 ** 5
-    # operations_dummy = abs(operations_dummy)
-
-    np.clip(operations_dummy, 10 ** 4, 20 * 10 ** 5)
+    operations_dummy = abs(operations_dummy)
 
     print('Marketing Spend Noise Range:', noise_mspend.min(), noise_mspend.max())
     print('Admin Noise Range:', noise_admin.min(), noise_admin.max())
