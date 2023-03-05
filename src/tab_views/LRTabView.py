@@ -29,6 +29,7 @@ class LRTabView:
         self.__x_test: np.array = None
         self.__y_train: np.array = None
         self.__y_test: np.array = None
+
         self.__predictable_column = ''
         self.__independent_col_just_predicted = ''
 
@@ -97,25 +98,45 @@ class LRTabView:
         print(f'LR: Set predictable column as: {column}')
 
     def train_model(self) -> dict:
-        pass
-
-    def predict(self) -> float:
-        # Training the model
         selected_column = self.__independent_feature_option_menu.get()
         self.__independent_col_just_predicted = selected_column
+
         x = self.__dataset[selected_column].values
         y = self.__dataset[self.__predictable_column].values
 
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
                                                                                         random_state=42)
+        # Training the model
         self.__regression_model.fit(self.__x_train.reshape(-1, 1), self.__y_train.reshape(-1, 1))
+        self.__plot()
+
+        # Evaluating the model
+        predicted_values = self.__regression_model.predict(self.__x_test.reshape(-1, 1))
+        mse = mean_squared_error(self.__y_test.reshape(-1, 1), predicted_values)
+        rmse = np.sqrt(mse)
+        r2score = r2_score(self.__y_test.reshape(-1, 1), predicted_values)
+
+        self.__evaluation_metrics["r2_score"] = r2score
+        self.__evaluation_metrics["mse"] = mse
+        self.__evaluation_metrics["rmse"] = rmse
+        return self.__evaluation_metrics
+
+
+    def predict(self) -> float:
+        # Training the model
+        # selected_column = self.__independent_feature_option_menu.get()
+        # self.__independent_col_just_predicted = selected_column
+        # x = self.__dataset[selected_column].values
+        # y = self.__dataset[self.__predictable_column].values
+        #
+        # self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
+        #                                                                                 random_state=42)
+        # self.__regression_model.fit(self.__x_train.reshape(-1, 1), self.__y_train.reshape(-1, 1))
+        assert len(self.__independent_col_just_predicted) != 0
         self.__predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0]
         self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
-
-        if bool(self.__plot_graph_checkbox.get()):
-            self.__plot()
         return self.__predicted_value
 
     def get_evaluation_metrics(self) -> dict:

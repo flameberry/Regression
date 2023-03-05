@@ -181,7 +181,6 @@ class RegressionApp(customtkinter.CTk):
 
     def __predictable_column_callback(self, *args):
         column = self.__predictable_col_string_var.get()
-        print(column)
         for tab_view in self.__tab_views:
             tab_view.invalidate(self.__dataset, column)
 
