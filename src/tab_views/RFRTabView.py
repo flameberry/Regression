@@ -4,21 +4,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
 
-class MLRTabView:
-    __tab_name = 'Multiple Linear'
+class RFRTabView:
+    __tab_name = 'Random Forest'
 
     @staticmethod
     def get_tab_name() -> str:
-        return MLRTabView.__tab_name
+        return RFRTabView.__tab_name
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__dataset = pd.DataFrame()
-        self.__regression_model = LinearRegression()
+        self.__regression_model = RandomForestRegressor(n_estimators=300, max_features='sqrt', max_depth=5, random_state=18)
+
         self.__x_train: np.array = None
         self.__x_test: np.array = None
         self.__y_train: np.array = None
@@ -105,7 +106,7 @@ class MLRTabView:
             r2score = r2_score(self.__y_test, y_predicted)
             mse = mean_squared_error(self.__y_test, y_predicted)
             rmse = np.sqrt(mse)
-            print(f'Multiple Linear Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
+            print(f'Random Forest Regression: R2_Score: {r2score * 100}%, RMSE: {rmse}, MSE: {mse}')
 
     def invalidate(self, dataset: pd.DataFrame, predictable_column: str):
         self.__dataset = dataset

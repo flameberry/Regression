@@ -12,6 +12,7 @@ from tab_views.DatasetTabView import DatasetTabView
 from tab_views.LRTabView import LRTabView
 from tab_views.MLRTabView import MLRTabView
 from tab_views.SVRTabView import SVRTabView
+from tab_views.RFRTabView import RFRTabView
 
 
 class PredictionApp(customtkinter.CTk):
@@ -63,11 +64,13 @@ class PredictionApp(customtkinter.CTk):
         self.__main_tab_view.add(LRTabView.get_tab_name())
         self.__main_tab_view.add(MLRTabView.get_tab_name())
         self.__main_tab_view.add(SVRTabView.get_tab_name())
+        self.__main_tab_view.add(RFRTabView.get_tab_name())
 
         self.__DatasetTabView = DatasetTabView(self.__main_tab_view.tab(DatasetTabView.get_tab_name()))
         self.__LRTabView = LRTabView(self.__main_tab_view.tab(LRTabView.get_tab_name()))
         self.__MLRTabView = MLRTabView(self.__main_tab_view.tab(MLRTabView.get_tab_name()))
         self.__SVRTabView = SVRTabView(self.__main_tab_view.tab(SVRTabView.get_tab_name()))
+        self.__RFRTabView = RFRTabView(self.__main_tab_view.tab(RFRTabView.get_tab_name()))
 
         sns.set_theme()
 
@@ -111,6 +114,7 @@ class PredictionApp(customtkinter.CTk):
             self.__LRTabView.invalidate(self.__dataset, selected_col)
             self.__MLRTabView.invalidate(self.__dataset, selected_col)
             self.__SVRTabView.invalidate(self.__dataset, selected_col)
+            self.__RFRTabView.invalidate(self.__dataset, selected_col)
         else:
             print('ERROR: Failed to reload dataset!')
 
@@ -129,6 +133,8 @@ class PredictionApp(customtkinter.CTk):
             self.__MLRTabView.predict()
         elif current_tab == self.__SVRTabView.get_tab_name():
             self.__SVRTabView.predict()
+        elif current_tab == self.__RFRTabView.get_tab_name():
+            self.__RFRTabView.predict()
 
     def __accuracy(self):
         current_tab = self.__main_tab_view.get()
@@ -138,3 +144,5 @@ class PredictionApp(customtkinter.CTk):
             self.__MLRTabView.accuracy()
         elif current_tab == self.__SVRTabView.get_tab_name():
             self.__SVRTabView.accuracy()
+        elif current_tab == self.__RFRTabView.get_tab_name():
+            self.__RFRTabView.accuracy()

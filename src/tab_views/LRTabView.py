@@ -10,7 +10,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 class LRTabView:
-    __tab_name = 'Linear Regression'
+    __tab_name = 'Linear'
 
     @staticmethod
     def get_tab_name() -> str:

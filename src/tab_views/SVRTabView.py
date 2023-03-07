@@ -11,7 +11,7 @@ from sklearn.svm import SVR
 
 
 class SVRTabView:
-    __tab_name = 'Support Vector Regression'
+    __tab_name = 'Support Vector'
 
     @staticmethod
     def get_tab_name() -> str:
