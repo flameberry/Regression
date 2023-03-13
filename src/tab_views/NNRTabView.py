@@ -130,6 +130,8 @@ class NNRTabView:
         self.__feature_entry_labels: list[customtkinter.CTkLabel] = []
 
         self.row_index = 0
+        self.__predicted_value = None
+        self.__evaluation_metrics = {}
 
     def __invalidate_widgets(self):
         for widgets in self.__tab_view.winfo_children():
@@ -138,6 +140,9 @@ class NNRTabView:
         self.__predicted_value_label = customtkinter.CTkLabel(self.__tab_view)
         self.__feature_entries = []
         self.__feature_entry_labels = []
+
+        self.__evaluation_metrics = {}
+        self.__predicted_value = None
 
     def __create_layout(self):
         # display layout based on the imported dataset
@@ -165,10 +170,6 @@ class NNRTabView:
         if column_index != 0:
             self.row_index += 2
         
-        self.__create_neural_network()
-        self.__plot()
-    
-    def __create_neural_network(self):
         # Training the neural network
         x = self.__dataset.drop(self.__predictable_column, axis=1).values
         y = self.__dataset[self.__predictable_column].values
@@ -182,6 +183,7 @@ class NNRTabView:
             self.__standard_scaler.transform(self.__x_test)
         )
 
+    def __create_neural_network(self):
         N_TRAIN = len(self.__x_train)
         BATCH_SIZE = 500
         STEPS_PER_EPOCH = max(1, N_TRAIN // BATCH_SIZE)
@@ -272,22 +274,33 @@ class NNRTabView:
         
         self.__regression_model = keras.models.load_model(path)
 
-    def predict(self):
+    def train_model(self) -> dict:
+        self.__create_neural_network()
+        self.__plot()
+
+        prediction_test = self.__regression_model.predict(self.__x_test)
+        r2score = r2_score(self.__y_test, prediction_test)
+        mse = np.mean(prediction_test - self.__y_test) ** 2
+        rmse = np.sqrt(mse)
+
+        self.__evaluation_metrics["r2_score"] = r2score
+        self.__evaluation_metrics["mse"] = mse
+        self.__evaluation_metrics["rmse"] = rmse
+        return self.__evaluation_metrics
+
+    def predict(self) -> float:
         assert not self.__dataset.empty
         feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
         # self.__standard_scaler.transform(feature_list)
-        predicted_value = self.__regression_model.predict(feature_list)
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {predicted_value[0]}',
+        self.__predicted_value = self.__regression_model.predict(feature_list)[0][0]
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=self.row_index, column=0,
                                           columnspan=3, padx=10, pady=(0, 10), sticky='WE')
+        return self.__predicted_value
 
-    def accuracy(self):
-        prediction_test = self.__regression_model.predict(self.__x_test)
-        # print(self.__y_test, prediction_test)
-        r2score = r2_score(self.__y_test, prediction_test)
-        mse = np.mean(prediction_test - self.__y_test) ** 2
-        print(f"Neural Network Regression: R2 Score: {r2score * 100}%, RMSE: {np.sqrt(mse)}, MSE: {mse}")
+    def get_evaluation_metrics(self) -> dict:
+        return self.__evaluation_metrics
 
     def save(self, dataset_name):
         save_path = str(project_dir) + f'/models/{dataset_name}_NNR_Model_{datetime.datetime.now()}'

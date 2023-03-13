@@ -72,7 +72,7 @@ class RegressionApp(customtkinter.CTk):
         self.__project_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='Flameberry', font=customtkinter.CTkFont(size=17, weight='bold'))
         self.__project_name_label.grid(row=0, column=0)
 
-        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=150,
+        self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=140,
                                                            font=customtkinter.CTkFont(weight='bold'))
         self.__dataset_name_label.grid(row=7, column=0, padx=20, pady=10)
 
@@ -97,7 +97,7 @@ class RegressionApp(customtkinter.CTk):
         self.__status_bar = customtkinter.CTkFrame(self, height=30, corner_radius=self.__frame_corner_radius)
         self.__status_bar.grid(row=2, column=1, padx=self.__frame_padding, pady=(0, self.__frame_padding), sticky='NSEW')
 
-        self.__evaluation_metric_label = customtkinter.CTkLabel(self.__status_bar, text='')
+        self.__evaluation_metric_label = customtkinter.CTkLabel(self.__status_bar, text='', font=customtkinter.CTkFont(size=15, weight='bold'))
         self.__evaluation_metric_label.grid(row=0, column=0, padx=10)
 
         plt.style.use("seaborn-dark")
@@ -200,24 +200,40 @@ class RegressionApp(customtkinter.CTk):
                     )
 
     def __predict(self, *args):
+        assert len(self.__dataset_path)
         current_tab = self.__main_tab_view.get()
         for tab_view in self.__tab_views:
             if current_tab == type(tab_view).get_tab_name():
                 predicted_val = tab_view.predict()
 
     def __train_model(self, *args):
+        # assert len(self.__dataset_path)
         current_tab = self.__main_tab_view.get()
+        self.__training_progress_label.grid()
+        self.__training_progress_bar.grid()
+
+        progress = 0
+        total = len(self.__tab_views) - 1
         for tab_view in self.__tab_views:
+            if not hasattr(tab_view, 'train_model'):
+                continue
+
+            self.__training_progress_bar.set(value=progress / total)
+            self.__training_progress_label.configure(text=f'Training {tab_view.get_tab_name().removesuffix("TabView")}....')
+            self.update_idletasks()
+
+            evaluation_metrics = tab_view.train_model()
             if current_tab == type(tab_view).get_tab_name():
-                evaluation_metrics = tab_view.train_model()
                 self.__evaluation_metric_label.configure(text=f'R2_score: {round(evaluation_metrics["r2_score"], 6)}, MSE: {round(evaluation_metrics["mse"], 4)}, RMSE: {round(evaluation_metrics["rmse"], 4)}')
-            else:
-                try:
-                    tab_view.train_model()
-                except AttributeError:
-                    pass
+            progress += 1
+
+        self.update_idletasks()
+
+        self.__training_progress_bar.grid_remove()
+        self.__training_progress_label.grid_remove()
     
     def __save(self, *args):
+        assert len(self.__dataset_path)
         current_tab = self.__main_tab_view.get()
         if current_tab == NNRTabView.get_tab_name():
             for tab_view in self.__tab_views:
@@ -301,9 +317,21 @@ class RegressionApp(customtkinter.CTk):
         )
         self.__reload_button_toolbar.grid(row=0, column=1, padx=(5, 0), sticky='NS')
 
+        # Progress Bar
+        self.__training_progress_bar = customtkinter.CTkProgressBar(self.__tool_bar_frame, width=120)
+        self.__training_progress_bar.grid(row=0, column=3)
+        self.__training_progress_bar.grid_remove()
+
+        self.__training_progress_label = customtkinter.CTkLabel(
+            self.__tool_bar_frame, text='',
+            font=customtkinter.CTkFont(size=14, weight="normal")
+        )
+        self.__training_progress_label.grid(row=0, column=2, sticky='E', padx=10)
+        self.__training_progress_label.grid_remove()
+
         self.__predictable_column_option_menu_toolbar = customtkinter.CTkOptionMenu(self.__tool_bar_frame, values=[])
         self.__predictable_column_option_menu_toolbar.set('N/A')
-        self.__predictable_column_option_menu_toolbar.grid(row=0, column=2)
+        self.__predictable_column_option_menu_toolbar.grid(row=0, column=4, padx=20)
 
         hammer_icon_image = customtkinter.CTkImage(
             Image.open(str(project_dir) + '/icons/hammer_icon_48x48.png'),
@@ -319,7 +347,7 @@ class RegressionApp(customtkinter.CTk):
             height=24,
             corner_radius=5
         )
-        self.__train_button_toolbar.grid(row=0, column=3, sticky='NS')
+        self.__train_button_toolbar.grid(row=0, column=5, sticky='NS')
 
         play_button_image = customtkinter.CTkImage(
             Image.open(str(project_dir) + '/icons/play_button_icon.png'),
@@ -335,4 +363,4 @@ class RegressionApp(customtkinter.CTk):
             height=24,
             corner_radius=5
         )
-        self.__play_button.grid(row=0, column=4, padx=(5, 0), sticky='NS')
+        self.__play_button.grid(row=0, column=6, padx=(5, 0), sticky='NS')

@@ -42,7 +42,7 @@ class MethodSelectionWidget(customtkinter.CTk):
             self.__method_checkbox_variables[i] = bool(checkbox.get())
             i += 1
         self.update_idletasks()
-        self.destroy()
+        self.after_idle(self.destroy)
 
     def get_choices(self) -> list[bool]:
         return self.__method_checkbox_variables

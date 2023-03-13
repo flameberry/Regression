@@ -123,15 +123,6 @@ class LRTabView:
 
 
     def predict(self) -> float:
-        # Training the model
-        # selected_column = self.__independent_feature_option_menu.get()
-        # self.__independent_col_just_predicted = selected_column
-        # x = self.__dataset[selected_column].values
-        # y = self.__dataset[self.__predictable_column].values
-        #
-        # self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
-        #                                                                                 random_state=42)
-        # self.__regression_model.fit(self.__x_train.reshape(-1, 1), self.__y_train.reshape(-1, 1))
         assert len(self.__independent_col_just_predicted) != 0
         self.__predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0]
         self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
