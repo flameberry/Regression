@@ -70,37 +70,37 @@ def generate_random_dataset(size=10000):
     range_min = 50000
     range_max = 650000
 
+    noise_scale = 1.0
+
     mspend_dummy = np.linspace(start=range_min, stop=range_max, num=size)
-    noise_mspend = 0.3 * np.random.normal(loc=mspend_dummy.mean(), scale=mspend_dummy.std(), size=mspend_dummy.size)
+    noise_mspend = noise_scale * np.random.normal(loc=mspend_dummy.mean(), scale=mspend_dummy.std(), size=mspend_dummy.size)
     mspend_dummy += noise_mspend
     mspend_dummy = abs(mspend_dummy)
 
     profit_dummy = np.array(sine(mspend_dummy, 1000000, 1.57 / mspend_dummy.max()))
-    noise_profit = 0.5 * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)
+    noise_profit = noise_scale * np.random.normal(loc=profit_dummy.mean(), scale=profit_dummy.std(), size=profit_dummy.size)
     profit_dummy += noise_profit
     profit_dummy = abs(profit_dummy)
 
-    scale = 100.0
-
     admin_dummy = 10 * np.array(bell_curve_reverse(profit_dummy, 10 ** 5, 10 ** 2, 10 ** 4.5))
-    noise_admin = scale * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
+    noise_admin = noise_scale * np.random.normal(loc=admin_dummy.mean(), scale=admin_dummy.std(), size=admin_dummy.size)
     admin_dummy += noise_admin
     admin_dummy = abs(admin_dummy)
 
     rdspend_dummy = np.array(power_law_reverse(profit_dummy + 0 * 10 ** 5, 7500, 0.375))
-    noise_rdspend = scale * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
+    noise_rdspend = noise_scale * np.random.normal(loc=rdspend_dummy.mean(), scale=rdspend_dummy.std(), size=rdspend_dummy.size)
     rdspend_dummy += noise_rdspend
     rdspend_dummy = abs(rdspend_dummy)
 
     sales_dummy = 10 ** 5 * np.array(cubic_reverse(profit_dummy, 4000, 1))
-    noise_sales = scale * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
+    noise_sales = noise_scale * np.random.normal(loc=sales_dummy.mean(), scale=sales_dummy.std(), size=sales_dummy.size)
     sales_dummy += noise_sales
     sales_dummy = abs(sales_dummy)
 
     # operations_dummy = np.array(ellipse_reverse(profit_dummy, 10 * 10 ** 5, 6 * 10 ** 5))
     # operations_dummy = np.array(rect_hyperbola_inverse(profit_dummy, 10 ** 6))
     operations_dummy = np.array(half_life_inverse(profit_dummy, 10 ** 11.7, 10 ** 6, -10 ** 5))
-    noise_operations = scale * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
+    noise_operations = noise_scale * np.random.normal(scale=operations_dummy.std(), size=operations_dummy.size)
     operations_dummy += noise_operations - 7 * 10 ** 5
     operations_dummy = abs(operations_dummy)
 
