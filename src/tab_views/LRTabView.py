@@ -94,8 +94,8 @@ class LRTabView:
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = train_test_split(x, y, test_size=0.3,
                                                                                         random_state=42)
         self.__regression_model.fit(self.__x_train.reshape(-1, 1), self.__y_train.reshape(-1, 1))
-        predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column} is {predicted_value[0][0]}',
+        predicted_value = round(self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0], 3)
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{predicted_value}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
 
