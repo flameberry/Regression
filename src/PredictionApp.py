@@ -23,8 +23,11 @@ class PredictionApp(customtkinter.CTk):
         self.__dataset = pd.DataFrame()
         self.__predictable_col_string_var = None
 
+        self.__window_width = min(900, self.winfo_screenwidth())
+        self.__window_height = min(700, self.winfo_screenheight())
+
         self.title("Profit Prediction")
-        self.geometry(f"{950}x{800}")
+        self.geometry(f"{self.__window_width}x{self.__window_height}")
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)

@@ -70,7 +70,7 @@ def generate_random_dataset(size=10000):
     range_min = 50000
     range_max = 650000
 
-    noise_scale = 1.0
+    noise_scale = 7.5
 
     mspend_dummy = np.linspace(start=range_min, stop=range_max, num=size)
     noise_mspend = noise_scale * np.random.normal(loc=mspend_dummy.mean(), scale=mspend_dummy.std(), size=mspend_dummy.size)

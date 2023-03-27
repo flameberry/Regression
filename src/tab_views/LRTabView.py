@@ -33,6 +33,7 @@ class LRTabView:
         self.__independent_feature_option_menu: customtkinter.CTkOptionMenu
         self.__feature_entry: customtkinter.CTkEntry
         self.__plot_graph_checkbox: customtkinter.CTkCheckBox
+        self.__tab_view.grid_columnconfigure((0, 1, 2), weight=1)
 
     def __invalidate_widgets(self):
         for widgets in self.__tab_view.winfo_children():
@@ -44,8 +45,6 @@ class LRTabView:
         self.__plot_graph_checkbox = customtkinter.CTkCheckBox(self.__tab_view)
 
     def __create_layout(self):
-        # self.__tab_view.columnconfigure((0, 1, 2), weight=1)
-
         attribute_list = list(self.__dataset.columns.values)
         self.__independent_feature_option_menu.configure(values=attribute_list, width=200, dynamic_resizing=False)
         self.__independent_feature_option_menu.set(attribute_list[0])
@@ -59,7 +58,8 @@ class LRTabView:
 
     def __plot(self):
         if not self.__dataset.empty:
-            figure = plt.Figure(figsize=(6, 5))
+            self.__tab_view.grid_rowconfigure(2, weight=1)
+            figure = plt.Figure()
             figure.set_layout_engine("constrained")
             ax = figure.subplots()
 
@@ -78,7 +78,7 @@ class LRTabView:
 
             canvas = FigureCanvasTkAgg(figure, master=self.__tab_view)
             canvas.draw()
-            canvas.get_tk_widget().grid(row=2, column=0, columnspan=3)
+            canvas.get_tk_widget().grid(row=2, column=0, columnspan=3, sticky='NSEW')
 
     def set_predictable_column(self, column: str):
         self.__predictable_column = column
