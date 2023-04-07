@@ -131,8 +131,8 @@ class LRTabView:
         assert len(self.__independent_col_just_predicted) != 0
         self.__predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0]
         self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}',
-                                               font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
+                                               font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 5), sticky='WE')
         return self.__predicted_value
 
     def get_evaluation_metrics(self) -> dict:

@@ -137,9 +137,9 @@ class MLRTabView:
         feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
         self.__predicted_value = self.__regression_model.predict(feature_list)[0]
         self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}',
-                                               font=customtkinter.CTkFont(size=20, weight="bold"))
+                                               font=customtkinter.CTkFont(size=16, weight="bold"))
         self.__predicted_value_label.grid(row=self.row_index, column=0,
-                                          columnspan=3, padx=10, pady=(0, 10), sticky='WE')
+                                          columnspan=3, padx=10, pady=(0, 5), sticky='WE')
         return self.__predicted_value
 
     def invalidate(self, dataset: pd.DataFrame, predictable_column: str):

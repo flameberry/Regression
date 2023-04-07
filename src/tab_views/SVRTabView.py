@@ -151,8 +151,8 @@ class SVRTabView:
         self.__predicted_value = self.__y_standard_scalar.inverse_transform([self.__predicted_value])
         self.__predicted_value = self.__predicted_value[0][0]
 
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}', font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.__predicted_value_label.grid(row=self.row_index, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}', font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.__predicted_value_label.grid(row=self.row_index, column=0, columnspan=3, padx=10, pady=(0, 5), sticky='WE')
         return self.__predicted_value
 
     def get_evaluation_metrics(self) -> dict:
