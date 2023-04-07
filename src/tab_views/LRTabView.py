@@ -10,6 +10,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
+from src.regression import Regression
+
 
 class LRTabView:
     """
@@ -21,6 +23,10 @@ class LRTabView:
     @staticmethod
     def get_tab_name() -> str:
         return LRTabView.__tab_name
+
+    @staticmethod
+    def get_regression_type() -> Regression:
+        return Regression.Linear
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__dataset: pd.DataFrame
@@ -121,11 +127,10 @@ class LRTabView:
         self.__evaluation_metrics["rmse"] = rmse
         return self.__evaluation_metrics
 
-
     def predict(self) -> float:
         assert len(self.__independent_col_just_predicted) != 0
         self.__predicted_value = self.__regression_model.predict(np.array(float(self.__feature_entry.get())).reshape(-1, 1))[0][0]
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=1, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
         return self.__predicted_value

@@ -8,6 +8,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
+from src.regression import Regression
+
 
 class MLRTabView:
     """
@@ -19,6 +21,10 @@ class MLRTabView:
     @staticmethod
     def get_tab_name() -> str:
         return MLRTabView.__tab_name
+
+    @staticmethod
+    def get_regression_type() -> Regression:
+        return Regression.MultipleLinear
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__dataset: pd.DataFrame
@@ -130,7 +136,7 @@ class MLRTabView:
         assert not self.__dataset.empty
         feature_list = [[float(entry.get()) for entry in self.__feature_entries]]
         self.__predicted_value = self.__regression_model.predict(feature_list)[0]
-        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: {self.__predicted_value}',
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}',
                                                font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=self.row_index, column=0,
                                           columnspan=3, padx=10, pady=(0, 10), sticky='WE')

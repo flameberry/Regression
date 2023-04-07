@@ -9,6 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 
+from src.regression import Regression
+
 
 class SVRTabView:
     """
@@ -20,6 +22,10 @@ class SVRTabView:
     @staticmethod
     def get_tab_name() -> str:
         return SVRTabView.__tab_name
+
+    @staticmethod
+    def get_regression_type() -> Regression:
+        return Regression.SupportVector
 
     def __init__(self, tab_view: customtkinter.CTkFrame):
         self.__dataset: pd.DataFrame
@@ -145,7 +151,7 @@ class SVRTabView:
         self.__predicted_value = self.__y_standard_scalar.inverse_transform([self.__predicted_value])
         self.__predicted_value = self.__predicted_value[0][0]
 
-        self.__predicted_value_label.configure(text=f'Predicted Value: {self.__predicted_value}', font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.__predicted_value_label.configure(text=f'Predicted {self.__predictable_column}: ₹{round(self.__predicted_value, 2)}', font=customtkinter.CTkFont(size=20, weight="bold"))
         self.__predicted_value_label.grid(row=self.row_index, column=0, columnspan=3, padx=10, pady=(0, 10), sticky='WE')
         return self.__predicted_value
 

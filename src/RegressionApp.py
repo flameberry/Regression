@@ -31,7 +31,7 @@ class RegressionApp(customtkinter.CTk):
         super().__init__()
 
         self.__dataset_path: str = ''
-        self.__dataset: pd.DataFrame
+        self.__dataset = pd.DataFrame()
         self.__predictable_col_string_var = None
 
         self.__loading_widget = None
@@ -164,6 +164,37 @@ class RegressionApp(customtkinter.CTk):
         else:
             print('ERROR: Failed to reload dataset!')
 
+    def __create_accuracy_window(self):
+        if len(self.__dataset):
+            self.__accuracy_window = customtkinter.CTkToplevel(self)
+            self.__accuracy_window.title('Compare Accuracies')
+            self.__accuracy_window.geometry('640x230')
+
+            center(self.__accuracy_window, parent=self)
+            self.__accuracy_window.grab_set()
+            self.__accuracy_window.transient(self)
+
+            self.__accuracy_infos = []
+
+            for i in range(len(self.__tab_view_types) - 1):
+                self.__accuracy_infos.append(customtkinter.CTkTextbox(self.__accuracy_window, height=100))
+                evaluation_metrics = self.__tab_views[i + 1].get_evaluation_metrics()
+
+                text = f'{self.__tab_view_types[i + 1].get_regression_type().to_string()}\n' \
+                       f'R2_score: {round(evaluation_metrics["r2_score"], 4)}\n' \
+                       f'MSE: ₹{round(evaluation_metrics["mse"], 2)}\n' \
+                       f'RMSE: ₹{round(evaluation_metrics["rmse"], 2)}'
+
+                self.__accuracy_infos[i].insert(index='0.0', text=text)
+
+            row, column = 0, 0
+            for info in self.__accuracy_infos:
+                info.grid(row=row, column=column, padx=(10, 0), pady=(10, 0))
+                column += 1
+                if column == 3:
+                    column = 0
+                    row += 1
+
     def __create_loading_widget(self):
         self.__loading_widget = customtkinter.CTkToplevel(self)
         self.__loading_widget.title('Loading Dataset')
@@ -196,7 +227,7 @@ class RegressionApp(customtkinter.CTk):
                     self.__evaluation_metric_label.configure(text='')
                 else:
                     self.__evaluation_metric_label.configure(
-                        text=f'R2_score: {round(evaluation_metrics["r2_score"], 6)}, MSE: {round(evaluation_metrics["mse"], 4)}, RMSE: {round(evaluation_metrics["rmse"], 4)}'
+                        text=f'R2_score: {round(evaluation_metrics["r2_score"], 4)}, MSE: ₹{round(evaluation_metrics["mse"], 4)}, RMSE: ₹{round(evaluation_metrics["rmse"], 4)}'
                     )
 
     def __predict(self, *args):
@@ -279,19 +310,19 @@ class RegressionApp(customtkinter.CTk):
         self.configure(menu=self.__menu_bar)
 
     def __create_toolbar_layout(self):
-        self.__tool_bar_frame = customtkinter.CTkFrame(self, corner_radius=self.__frame_corner_radius)
-        self.__tool_bar_frame.grid(row=0, column=1, padx=self.__frame_padding, pady=(self.__frame_padding, 0), sticky='NSEW')
+        self.__toolbar_frame = customtkinter.CTkFrame(self, corner_radius=self.__frame_corner_radius)
+        self.__toolbar_frame.grid(row=0, column=1, padx=self.__frame_padding, pady=(self.__frame_padding, 0), sticky='NSEW')
 
-        self.__tool_bar_frame.grid_rowconfigure(0, weight=1)
-        self.__tool_bar_frame.grid_columnconfigure(2, weight=1)
+        self.__toolbar_frame.grid_rowconfigure(0, weight=1)
+        self.__toolbar_frame.grid_columnconfigure(2, weight=1)
 
         import_button_image = customtkinter.CTkImage(
             Image.open(str(project_dir) + '/icons/add_file_icon_24x24.png'),
             size=(24, 24)
         )
 
-        self.__import_button_tool_bar = customtkinter.CTkButton(
-            self.__tool_bar_frame,
+        self.__import_button_toolbar = customtkinter.CTkButton(
+            self.__toolbar_frame,
             image=import_button_image,
             text='',
             command=self.__import_dataset,
@@ -299,7 +330,7 @@ class RegressionApp(customtkinter.CTk):
             height=24,
             corner_radius=5
         )
-        self.__import_button_tool_bar.grid(row=0, column=0, sticky='NS')
+        self.__import_button_toolbar.grid(row=0, column=0, sticky='NS')
 
         reload_button_icon_image = customtkinter.CTkImage(
             Image.open(str(project_dir) + '/icons/reload_icon_24x24.png'),
@@ -307,7 +338,7 @@ class RegressionApp(customtkinter.CTk):
         )
 
         self.__reload_button_toolbar = customtkinter.CTkButton(
-            self.__tool_bar_frame,
+            self.__toolbar_frame,
             image=reload_button_icon_image,
             text='',
             command=self.__reload_dataset,
@@ -318,18 +349,18 @@ class RegressionApp(customtkinter.CTk):
         self.__reload_button_toolbar.grid(row=0, column=1, padx=(5, 0), sticky='NS')
 
         # Progress Bar
-        self.__training_progress_bar = customtkinter.CTkProgressBar(self.__tool_bar_frame, width=120)
+        self.__training_progress_bar = customtkinter.CTkProgressBar(self.__toolbar_frame, width=120)
         self.__training_progress_bar.grid(row=0, column=3)
         self.__training_progress_bar.grid_remove()
 
         self.__training_progress_label = customtkinter.CTkLabel(
-            self.__tool_bar_frame, text='',
+            self.__toolbar_frame, text='',
             font=customtkinter.CTkFont(size=14, weight="normal")
         )
         self.__training_progress_label.grid(row=0, column=2, sticky='E', padx=10)
         self.__training_progress_label.grid_remove()
 
-        self.__predictable_column_option_menu_toolbar = customtkinter.CTkOptionMenu(self.__tool_bar_frame, values=[])
+        self.__predictable_column_option_menu_toolbar = customtkinter.CTkOptionMenu(self.__toolbar_frame, values=[])
         self.__predictable_column_option_menu_toolbar.set('N/A')
         self.__predictable_column_option_menu_toolbar.grid(row=0, column=4, padx=20)
 
@@ -339,7 +370,7 @@ class RegressionApp(customtkinter.CTk):
         )
 
         self.__train_button_toolbar = customtkinter.CTkButton(
-            self.__tool_bar_frame,
+            self.__toolbar_frame,
             image=hammer_icon_image,
             text='',
             command=self.__train_model,
@@ -355,7 +386,7 @@ class RegressionApp(customtkinter.CTk):
         )
 
         self.__play_button = customtkinter.CTkButton(
-            self.__tool_bar_frame,
+            self.__toolbar_frame,
             image=play_button_image,
             text='',
             command=self.__predict,
@@ -364,3 +395,19 @@ class RegressionApp(customtkinter.CTk):
             corner_radius=5
         )
         self.__play_button.grid(row=0, column=6, padx=(5, 0), sticky='NS')
+
+        accuracy_button_icon = customtkinter.CTkImage(
+            Image.open(str(project_dir) + '/icons/percentage_icon_24x24.png'),
+            size=(24, 24)
+        )
+
+        self.__accuracy_button = customtkinter.CTkButton(
+            self.__toolbar_frame,
+            image=accuracy_button_icon,
+            text='',
+            command=self.__create_accuracy_window,
+            width=24,
+            height=24,
+            corner_radius=5
+        )
+        self.__accuracy_button.grid(row=0, column=7, padx=(5, 0))
