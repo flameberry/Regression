@@ -1,5 +1,7 @@
 import platform
 import pathlib
+import time
+import threading
 import tkinter
 import customtkinter
 from PIL import Image
@@ -44,7 +46,7 @@ class RegressionApp(customtkinter.CTk):
         self.__title = 'Regression'
 
         self.__frame_corner_radius = 5
-        self.__frame_padding = 10
+        self.__frame_padding = 5
 
         self.title(self.__title)
         self.geometry(f"{self.__window_width}x{self.__window_height}")
@@ -238,25 +240,26 @@ class RegressionApp(customtkinter.CTk):
                 predicted_val = tab_view.predict()
 
     def __train_model(self, *args):
-        # assert len(self.__dataset_path)
         current_tab = self.__main_tab_view.get()
         self.__training_progress_label.grid()
         self.__training_progress_bar.grid()
 
         progress = 0
         total = len(self.__tab_views) - 1
+        start_time = time.time()
         for tab_view in self.__tab_views:
             if not hasattr(tab_view, 'train_model'):
                 continue
 
             self.__training_progress_bar.set(value=progress / total)
-            self.__training_progress_label.configure(text=f'Training {tab_view.get_tab_name().removesuffix("TabView")}....')
+            self.__training_progress_label.configure(text=f'Training {tab_view.get_tab_name().removesuffix("TabView")} Model....')
             self.update_idletasks()
 
             evaluation_metrics = tab_view.train_model()
             if current_tab == type(tab_view).get_tab_name():
                 self.__evaluation_metric_label.configure(text=f'R2_score: {round(evaluation_metrics["r2_score"], 6)}, MSE: {round(evaluation_metrics["mse"], 4)}, RMSE: {round(evaluation_metrics["rmse"], 4)}')
             progress += 1
+        print(f'Time taken to train models: {round(time.time() - start_time, 4)} seconds')
 
         self.update_idletasks()
 
