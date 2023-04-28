@@ -72,8 +72,8 @@ class LRTabView:
         self.__feature_entry.configure(width=200, placeholder_text='Enter Value')
         self.__feature_entry.grid(row=0, column=1, padx=10, pady=10)
 
-        self.__plot_graph_checkbox.configure(text='Plot Graph')
-        self.__plot_graph_checkbox.grid(row=0, column=2, padx=10, pady=10)
+        # self.__plot_graph_checkbox.configure(text='Plot Graph')
+        # self.__plot_graph_checkbox.grid(row=0, column=2, padx=10, pady=10)
 
     def __plot(self):
         if not self.__dataset.empty:
