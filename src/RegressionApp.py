@@ -71,7 +71,7 @@ class RegressionApp(customtkinter.CTk):
         self.__sidebar_frame.grid(row=0, column=0, rowspan=3, padx=(self.__frame_padding, 0), pady=self.__frame_padding, sticky="nsew")
         self.__sidebar_frame.grid_rowconfigure(5, weight=1)
 
-        self.__project_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='Profit Prediction', font=customtkinter.CTkFont(size=17, weight='bold'))
+        self.__project_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='Flameberry', font=customtkinter.CTkFont(size=17, weight='bold'))
         self.__project_name_label.grid(row=0, column=0)
 
         self.__dataset_name_label = customtkinter.CTkLabel(self.__sidebar_frame, text='No Dataset Loaded', wraplength=140,

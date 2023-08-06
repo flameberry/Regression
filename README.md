@@ -2,7 +2,9 @@
 This is the repo where you'll get the comparison of many regression methods by their accuracies, errors, etc.
 
 The above is achieved by introducing you to an user interface where you can import any dataset you want and choose the column that you want to predict and predict it using various methods and comparing them by their accuracies, RMSEs and MSEs.
-<br>
+
+<img src="screenshots/Flameberry_RegressionApp_SS.png"/></img>
+<hr>
 
 # Implemented Methods
 1. Linear Regression
