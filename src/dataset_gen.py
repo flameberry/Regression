@@ -66,7 +66,7 @@ def rect_hyperbola_inverse(y, a):
     return np.sqrt(abs(a * a + y * y))
 
 
-def generate_random_dataset(size=10000):
+def generate_random_dataset(size=20000):
     range_min = 50000
     range_max = 650000
 
